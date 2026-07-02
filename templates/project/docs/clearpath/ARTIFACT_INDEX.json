@@ -1,0 +1,14 @@
+{
+  "schema_version": "clearpath.artifact_index.v1",
+  "active_change_id": "none",
+  "current_phase": "unknown",
+  "boot_files": [
+    "docs/clearpath/BOOT.md",
+    "docs/clearpath/CURRENT_CONTEXT.md"
+  ],
+  "read_policy": [
+    "Read BOOT.md first",
+    "Never read all artifacts",
+    "Use active CHANGE_INDEX.md"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "deny": [
+      "Write(.clearpath/approvals/**)",
+      "Edit(.clearpath/approvals/**)",
+      "MultiEdit(.clearpath/approvals/**)"
+    ]
+  }
+}

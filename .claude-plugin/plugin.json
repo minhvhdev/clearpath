@@ -1,0 +1,21 @@
+{
+  "name": "clearpath",
+  "displayName": "Clearpath",
+  "version": "0.4.1",
+  "description": "Approval-gated Claude Code product delivery workflow combining GSD-style context engineering, Superpowers-style spec/TDD discipline, gstack-style role review, and Clearpath safety/design/release governance. v0.4.1 is a governance hardening release.",
+  "author": {
+    "name": "Clearpath Project"
+  },
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "product-delivery",
+    "approval-gates",
+    "context-engineering",
+    "mcp",
+    "workflow"
+  ],
+  "hooks": "./hooks/hooks.json",
+  "mcpServers": "./.mcp.json",
+  "defaultEnabled": true
+}

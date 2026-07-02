@@ -1,0 +1,24 @@
+---
+description: Archive completed phases and compact durable state for future sessions.
+---
+# /clearpath:archive
+
+
+Run Archive/Learn.
+
+Actions:
+1. Update `STATE.md`, `CURRENT_CONTEXT.md`, `DECISIONS.md`, and `ARTIFACT_INDEX.json`.
+2. Mark completed artifacts canonical/superseded/archived.
+3. Write `PHASE_ARCHIVE.md` with what changed, why, and next actions.
+4. Keep `BOOT.md` and `CURRENT_CONTEXT.md` small.
+
+
+## Clearpath invariants
+
+- Do not treat artifacts as automatic context. Read `docs/clearpath/BOOT.md`, then `CURRENT_CONTEXT.md`, then the active `CHANGE_INDEX.md` before drilling into details.
+- Use the three required MCP capabilities when relevant: Serena for symbol/navigation, Codebase-Memory for large-repo knowledge, and Chrome DevTools MCP for browser QA.
+- Keep the main session as orchestrator. Use focused subagents for heavy research, planning, execution, review, and QA.
+- Do not implement production UI before design approval exists.
+- Do not install dependencies, edit secrets, run destructive data commands, or deploy production without manual user approval outside Claude Code.
+- Record durable product/change state in artifacts, but summarize current state in `CURRENT_CONTEXT.md` and `CHANGE_INDEX.md`.
+
