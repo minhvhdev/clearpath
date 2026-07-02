@@ -3,6 +3,9 @@ description: Initialize Clearpath artifacts in the current repository without re
 ---
 # /clearpath:init
 
+For normal usage, `/clearpath:go` is the default entrypoint. This
+skill is also called internally by the autopilot router when the
+detected mode is `new-empty-project` or `new-scaffolded-project`.
 
 Initialize Clearpath project artifacts.
 
@@ -11,6 +14,16 @@ Steps:
 2. Run `clearpath-init` from the project root if the user approves initialization.
 3. Read `docs/clearpath/BOOT.md` and `docs/clearpath/CURRENT_CONTEXT.md` after initialization.
 4. Select one of the three workflows: new product, existing Clearpath project, or adoption of an existing non-Clearpath product.
+5. Create or update `docs/clearpath/AUTOPILOT.md`. This file is
+   continuity metadata for the Clearpath Autopilot, not a
+   governance gate. Fill these fields: Detected mode, Last route,
+   Current phase, Design approval status, Implementation status,
+   Verification status, Release candidate status, Open blockers,
+   Next expected action, Last updated (ISO 8601 timestamp). The
+   SessionStart and UserPromptSubmit hooks are read-only and
+   never write this file; only the workflow skills that actually
+   run do. The template is at
+   `templates/project/docs/clearpath/AUTOPILOT.md` for reference.
 
 
 ## Clearpath invariants

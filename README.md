@@ -17,9 +17,12 @@ From the parent directory of this plugin:
 claude --plugin-dir ./clearpath-plugin
 ```
 
-Inside Claude Code, use namespaced skills such as:
+Inside Claude Code, you can just say what you want. The
+Autopilot detects the project mode and routes the request. You can
+also use namespaced skills such as:
 
 ```text
+/clearpath:go             (default autopilot entrypoint)
 /clearpath:init
 /clearpath:start
 /clearpath:update
@@ -34,6 +37,44 @@ Inside Claude Code, use namespaced skills such as:
 /clearpath:verify-windows
 /clearpath:autonomy
 ```
+
+## Simplest usage
+
+1. Install/enable the plugin.
+2. Open Claude Code at your project root.
+3. Tell Claude what you want to build or change.
+
+Examples:
+
+```text
+Build me a SaaS landing page for ...
+Add billing settings to this app.
+Review this existing codebase and prepare it for Clearpath.
+Fix the onboarding bug and verify it.
+```
+
+Clearpath Autopilot detects whether the repo needs init, update, or
+adopt mode. You can also run `/clearpath:go` manually.
+
+Lifecycle:
+
+```text
+detect -> clarify only if needed -> design/prototype -> user
+design approval -> implement -> verify -> release candidate ->
+user review
+```
+
+Power users can still invoke individual skills manually. Governance
+warnings still apply — see
+[docs/SECURITY_HARDENING.md](docs/SECURITY_HARDENING.md) and the
+Governance section below.
+
+`docs/clearpath/AUTOPILOT.md` is a continuity artifact, not a
+gate. It is created or updated only when a Clearpath workflow
+skill (`/clearpath:go`, `/clearpath:init`, `/clearpath:start`,
+`/clearpath:update`, `/clearpath:adopt`) actually runs. The
+SessionStart and UserPromptSubmit hooks are read-only. See
+[docs/AUTOPILOT.md](docs/AUTOPILOT.md).
 
 ## Structure
 
@@ -109,12 +150,14 @@ enforcement. Do not rely on editing `policy.json` to change behavior.
 In addition to the governance hooks, v0.4.1 adds real workflow
 skills for the design and verification phases:
 
-- Design review splits into two non-overlapping skills:
-  `/clearpath:taste-design` (product taste, concept, brand, UX
-  direction) and `/clearpath:impeccable` (UI craft, execution
-  polish). The `design-critic` agent aggregates both. The
-  `design-prototype` skill orchestrates them in that order and
-  stops for user design approval before production UI edits.
+- Design review splits into two complementary skills:
+  `/clearpath:taste-design` (art direction and anti-generic
+  frontend/product taste) and `/clearpath:impeccable` (precise UI
+  execution critique and implementation-quality polish). Taste-design
+  prevents the wrong or generic direction; impeccable makes the chosen
+  direction production-quality. The `design-critic` agent aggregates
+  both. The `design-prototype` skill orchestrates them in that order
+  and stops for user design approval before production UI edits.
 - Post-approval autonomy is codified in `/clearpath:autonomy`. After
   design and scope are approved, the implementation engineer may
   run the code -> test -> fix -> retest loop without asking, except

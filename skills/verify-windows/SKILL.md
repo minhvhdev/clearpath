@@ -4,6 +4,10 @@ description: Windows native/desktop verification workflow. CursorTouch/Windows-M
 
 # /clearpath:verify-windows
 
+For normal usage, `/clearpath:go` is the default entrypoint. This
+skill is called by the autopilot router when the user request
+involves Windows native or Electron/WebView2 verification.
+
 Windows native / desktop verification. Use CursorTouch or
 Windows-MCP for user-like UI testing. Do not use Playwright or
 Chrome DevTools MCP as the primary solution for Windows native apps.

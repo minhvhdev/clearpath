@@ -1,8 +1,25 @@
-# Clearpath v0.4.1 Validation Report
+# Clearpath Validation Report
 
 This report is regenerated per release. If a check was not run, it
 must say `NOT RUN` and the reason. Do not infer a PASS for a check
 that was skipped.
+
+## Latest patch
+
+- Patch: `v0.4.2 Design Skill Alignment`
+- Scope:
+  - Re-aligned `/clearpath:taste-design` and `/clearpath:impeccable`
+    roles
+  - Replaced hard non-overlap split with altitude-based boundary
+  - `taste-design` = art-direction and anti-generic frontend/product
+    taste critique
+  - `impeccable` = UI execution-quality and
+    implementation-readiness critique
+  - `design-critic` = final aggregator and conflict resolver
+  - No governance hook changes
+  - No MCP config changes
+  - No approval sentinel changes
+  - No source-control boundary changes
 
 ## Commands run
 
@@ -85,14 +102,26 @@ was not run, write `NOT RUN` and the reason.
   new Node writeFileSync regression cases for the wrapped Node
   write variants: deny without approval, deny on `components/`,
   allow on `prototype/`, allow after design approval)
+- `bash tests/autopilot-detect-mode-test.sh`: PASS (8/8: 4
+  detector scenarios, session-start emits context, session-start
+  does not write project files, user-prompt classifies a build
+  request and routes correctly, user-prompt keeps unrelated
+  prompts short)
 - `bash scripts/clearpath-doctor.sh`: PASS (0 failures, 1 warning:
   `codebase-memory-mcp` not on PATH)
 - `claude plugin validate . --strict`: PASS
 
-Run date: 2026-07-02. v0.4.1 pre-commit hardening run
-(source-control autonomy boundary, schema-clean settings template,
-Node writeFileSync regression coverage). Hooks/scripts/agents
-frontmatter unchanged from the v0.4.1 P0 workflow hardening pass.
+Run date: 2026-07-02. v0.4.2 Design Skill Alignment run (design-skill
+wording/orchestration alignment only; runtime governance gates
+unchanged).
+
+## Notes
+
+- Hooks remain regex guardrails, not a security sandbox.
+- `codebase-memory-mcp` warning is environmental and not a
+  plugin-structure failure.
+- This patch changed design-skill wording/orchestration only;
+  runtime governance gates were not modified.
 
 ## Known environment warnings
 

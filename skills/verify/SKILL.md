@@ -4,6 +4,9 @@ description: Verify implementation with tests, build, browser QA, and evidence. 
 
 # /clearpath:verify
 
+For normal usage, `/clearpath:go` is the default entrypoint. This
+skill is called by the autopilot router when the user request is
+classified as `verify-test`.
 
 Run Verify.
 

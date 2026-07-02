@@ -1,5 +1,107 @@
 # Changelog
 
+## 0.4.2 - Design Skill Alignment
+
+Small wording alignment before final review. No behavior change.
+No hooks, scripts, approval sentinels, source-control boundary,
+Windows-MCP boundary, or autopilot hook behavior change.
+
+- `skills/taste-design/SKILL.md` reworded to art direction,
+  anti-generic frontend/product taste, visual identity, product
+  vibe, and high-level typography/layout/motion/density judgment.
+- `skills/impeccable/SKILL.md` reworded to precise UI execution
+  critique, implementation-quality polish, states, accessibility,
+  responsive behavior, and implementation-level UI anti-patterns.
+- Boundary made altitude-based: both skills may inspect typography,
+  layout, motion, and density; taste-design judges them at
+  art-direction/product-taste level, impeccable judges them at
+  execution, consistency, implementation-readiness, and anti-pattern
+  level.
+- `skills/design-prototype/SKILL.md` no longer claims the two
+  reviews are non-overlapping; instead it describes them as
+  complementary at different altitudes and explains the order.
+- `agents/design-critic.md` and `agents/ux-designer.md` updated
+  with the aligned delegate wording and explicit conflict
+  aggregation behavior.
+- `docs/AUTOPILOT.md` updated with the design checkpoint mental
+  model for both skills.
+- `docs/CLEARPATH_PRODUCT_DIRECTION.md` updated Workflow A to run
+  taste-design then impeccable, and the skills section now names
+  the aligned roles.
+- `README.md` updated to describe the two skills as complementary
+  direction vs. execution.
+- `CHANGELOG.md` 0.4.1 historical bullets reworded to match the
+  aligned roles.
+
+## 0.4.2 - Autopilot State Patch
+
+Small follow-up to v0.4.2 Autopilot UX. Implements the
+`docs/clearpath/AUTOPILOT.md` continuity file that v0.4.2
+documented but did not implement.
+
+- New template `templates/project/docs/clearpath/AUTOPILOT.md`
+  ships the field list (Detected mode, Last route, Current phase,
+  Design approval status, Implementation status, Verification
+  status, Release candidate status, Open blockers, Next expected
+  action, Last updated).
+- `skills/go/SKILL.md`, `skills/init/SKILL.md`,
+  `skills/start/SKILL.md`, `skills/update/SKILL.md`, and
+  `skills/adopt/SKILL.md` each gain a step that tells the model
+  to create or update `docs/clearpath/AUTOPILOT.md` when the
+  skill actually drives a workflow step.
+- The file is explicitly described as **continuity metadata, not
+  a governance gate** in the operator docs and in each skill.
+- SessionStart and UserPromptSubmit hooks remain read-only. The
+  state file is created/updated only when a workflow skill runs.
+- `docs/AUTOPILOT.md` updated to spell out the read-only-hook
+  contract, the field list, and the non-tracking caveat
+  (the plugin does not enforce the file is updated at every
+  step; the skill instructions do).
+
+## 0.4.2 - Autopilot UX
+
+Adds a default-UX layer on top of the existing skills. The user no
+longer needs to remember slash commands for normal use.
+
+- New skill `skills/go/SKILL.md` (`/clearpath:go`): the default
+  Clearpath Autopilot entrypoint. Reads the detected project mode
+  and the user's request, then routes to the correct workflow
+  without requiring the user to pick a skill.
+- New script `scripts/clearpath-detect-mode.sh`: read-only
+  detector that returns one of `existing-clearpath-project`,
+  `adopt-existing-project`, `new-scaffolded-project`,
+  `new-empty-project`, or `unknown`. Supports `--format text` and
+  JSON-on-stdin; emits compact JSON by default.
+- New script `scripts/session-start-autopilot.sh`: SessionStart
+  hook. Injects routing context for Claude. Does not write files.
+- New script `scripts/user-prompt-autopilot.sh`: UserPromptSubmit
+  hook. Classifies the prompt and injects routing context. Does
+  not block normal prompts and does not write files.
+- `hooks/hooks.json` updated: added `UserPromptSubmit` entry and a
+  second `SessionStart` entry for the autopilot. PreToolUse
+  matchers, Stop hook, and the existing `session-start-load-state`
+  hook are unchanged.
+- Existing skills (`init`, `start`, `update`, `adopt`,
+  `design-prototype`, `autonomy`, `execute`, `verify`,
+  `verify-web`, `verify-windows`) gain a one-line note saying they
+  are called by the autopilot router and that `/clearpath:go` is
+  the default manual entrypoint. Behavior is unchanged.
+- `templates/project/CLAUDE.md` and
+  `templates/project/docs/clearpath/BOOT.md` updated to reference
+  the autopilot context.
+- New `docs/AUTOPILOT.md` documents what the autopilot does and
+  does not do, the detection modes, the clarification policy, the
+  design approval checkpoint, the post-approval autonomy, the
+  verification routing, and the known limitations honestly.
+- New `tests/autopilot-detect-mode-test.sh` covers four
+  scenarios: empty dir, scaffolded dir, Clearpath project, and
+  adopt-existing project.
+
+Governance hardening from v0.4.1 is unchanged. The safety and
+design gates, the approval sentinel model, the source-control
+finalization boundary, and the Windows-MCP opt-in boundary are
+preserved.
+
 ## 0.4.1 - Pre-Commit Hardening
 
 Small hardening patch on top of v0.4.1 P0 workflow hardening.
@@ -34,12 +136,17 @@ Workflow hardening release on top of the v0.4.1 governance gates.
 Hooks and test coverage are unchanged; the change is in skills,
 agents, and docs that operators can use.
 
-- P0: new skill `skills/impeccable/SKILL.md` for UI craft and
-  execution polish (spacing, alignment, density, micro-interactions,
-  accessibility, responsive).
-- P0: new skill `skills/taste-design/SKILL.md` for product taste,
-  concept, brand, and UX direction. The two skills are
-  non-overlapping; the `design-critic` agent aggregates them
+- P0: new skill `skills/impeccable/SKILL.md` for precise UI
+  execution critique and implementation-quality polish: consistency,
+  implementation readiness, accessibility, responsive behavior,
+  states, micro-interactions, and implementation-level anti-patterns.
+- P0: new skill `skills/taste-design/SKILL.md` for art direction,
+  anti-generic frontend/product taste, visual identity, concept,
+  brand, UX direction, and high-level typography/layout/motion/
+  density judgment. The two skills share visual vocabulary but split
+  by altitude: taste-design judges direction and product taste;
+  impeccable judges execution, consistency, implementation readiness,
+  and anti-patterns. The `design-critic` agent aggregates them
   rather than duplicating their checklists.
 - P0: `skills/design-prototype/SKILL.md` now orchestrates
   taste-design first, impeccable second, then `UI_CONTRACT.md` and

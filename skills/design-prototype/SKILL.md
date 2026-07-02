@@ -4,20 +4,28 @@ description: Produce prototype, run taste-design and impeccable reviews, write U
 
 # /clearpath:design-prototype
 
+For normal usage, `/clearpath:go` is the default entrypoint. This
+skill is called by the autopilot router when the user's request
+involves UI work, after the project mode is detected.
 
 Run the Design phase for UI changes.
 
-This skill orchestrates two non-overlapping review skills. It does not
-perform their work itself.
+This skill orchestrates two complementary review skills. They may
+inspect the same UI dimensions at different altitudes, but they must
+not duplicate the same finding.
 
-- `/clearpath:taste-design` — product taste, concept, brand, UX
-  direction. Run first.
-- `/clearpath:impeccable` — UI craft, execution polish, micro-detail.
-  Run second, after taste-design direction is settled.
+- `/clearpath:taste-design` — art direction, anti-generic
+  frontend/product taste, concept, brand, and product-level UX
+  direction. Run first to validate the direction and prevent generic
+  or sloppy art direction.
+- `/clearpath:impeccable` — precise UI execution critique,
+  consistency, implementation readiness, anti-pattern cleanup, and
+  polish. Run second to refine the chosen direction into
+  production-quality UI execution.
 
-The two skills have non-overlapping checklists. Do not duplicate
-their work. The `design-critic` agent then aggregates the two reviews
-into the final design verdict.
+The `design-critic` agent then aggregates both reviews, checks
+unresolved issues and conflicts, and produces the final design
+verdict.
 
 ## Required order
 
@@ -25,14 +33,15 @@ into the final design verdict.
    Vue, Svelte, Figma export, or a written screen-by-screen
    description).
 2. Run `/clearpath:taste-design` and write `TASTE_REVIEW.md`. Resolve
-   critical direction issues before continuing.
+   critical art-direction and product-taste issues before continuing.
 3. Run `/clearpath:impeccable` and write `IMPECCABLE_REVIEW.md`.
-   Resolve critical craft issues before continuing.
+   Resolve critical execution, consistency, anti-pattern, and
+   implementation-readiness issues before continuing.
 4. Produce `UI_CONTRACT.md` describing hierarchy, layout, states,
    responsive behavior, accessibility, and copy constraints.
 5. Produce `DESIGN_REVIEW.md` aggregating taste-design + impeccable
    verdicts. The `design-critic` agent is the final aggregator; it
-   does not redo their work.
+   checks blockers and conflicts without redoing their work.
 6. Stop before production UI edits. Ask the user to approve manually
    by creating `.clearpath/approvals/design-approved`. Claude tools
    are blocked from creating approval sentinels.

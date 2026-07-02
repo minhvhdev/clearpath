@@ -77,7 +77,9 @@ Initialize / Recover
 2. Discuss product intent, users, outcomes, constraints, and non-goals.
 3. Create product summary, spec, acceptance criteria, and MVP scope.
 4. Prototype UI locally when UI exists.
-5. Run design critique and get manual design approval.
+5. Run taste-design for art direction/product taste, then impeccable
+   for execution polish/implementation readiness, and get manual
+   design approval.
 6. Plan implementation tasks.
 7. Execute in small tasks; use TDD when tests exist.
 8. Verify with tests/build and Chrome QA.
@@ -106,7 +108,13 @@ Initialize / Recover
 
 ## 8. Skills and agents
 
-Skills are phase commands under `/clearpath:<skill>`: init, start, update, adopt, discuss, spec, design-prototype, architecture, plan, execute, verify, review, qa, release-candidate, release-gate, archive, doctor, artifact-index.
+Skills are phase commands under `/clearpath:<skill>`: init, start, update, adopt, discuss, spec, design-prototype, taste-design, impeccable, autonomy, architecture, plan, execute, verify, verify-web, verify-windows, review, qa, release-candidate, release-gate, archive, doctor, artifact-index, go. For design review, taste-design is art-direction and anti-generic frontend/product taste; impeccable is precise UI execution critique, consistency, implementation readiness, and anti-pattern polish.
+
+`/clearpath:go` is the default autopilot entrypoint. The user can
+type it manually, or the SessionStart and UserPromptSubmit hooks
+inject routing context that tells the model to behave as if
+`/clearpath:go` was invoked. See `docs/AUTOPILOT.md` for the
+routing contract.
 
 Agents: product-strategist, codebase-architect, ux-designer, design-critic, implementation-planner, implementation-engineer, qa-release-engineer, security-reviewer, context-ledger-manager.
 

@@ -1,38 +1,43 @@
 ---
-description: Review product taste, concept, brand fit, and UX direction. taste-design is about whether the prototype expresses the right product promise.
+description: Review art direction and anti-generic frontend/product taste. taste-design is about whether the prototype feels intentional, differentiated, and aligned with the product promise.
 ---
 
 # /clearpath:taste-design
 
-Review the prototype for product taste, brand fit, and UX direction.
-Taste-design is about whether the prototype is the right product, not
-whether it is built well.
+Review the prototype for art direction, anti-generic frontend/product
+taste, visual identity, product vibe, and brand fit. Taste-design is
+about whether the direction feels intentional, differentiated, and
+aligned with the product promise.
 
-taste-design is about product taste, concept, brand, and UX direction.
-impeccable is about execution quality and UI craft.
-Do not duplicate the other skill's checklist.
+taste-design judges typography, layout, motion, and density at the
+art-direction and product-taste level. impeccable judges the same
+surfaces at the execution, consistency, implementation-readiness, and
+anti-pattern level. Do not duplicate the other skill's findings.
 
 ## Scope
 
 Taste-design covers these direction dimensions:
 
-- product positioning
+- visual identity
+- product vibe
+- art direction
+- layout direction
+- typography direction
+- density and rhythm at the taste/art-direction level
+- motion direction
 - emotional tone
-- brand coherence
-- interaction model taste
-- clarity of user journey
-- information architecture taste
-- whether the design feels intentional vs generic
+- brand/product coherence
+- whether the UI feels generic, template-like, or premium
 - whether the prototype expresses the product promise
 
 Taste-design does NOT cover:
 
-- spacing, alignment, density, micro-interactions
-- typography execution
-- component consistency
+- pixel-level spacing, alignment, or density fixes
+- concrete typography values or component measurements
+- component consistency and implementation readiness
 - responsive behavior at the pixel level
-- accessibility contrast and targets
-- production-readiness of UI details
+- accessibility contrast and target-size measurements
+- implementation-level UI anti-pattern cleanup
 
 Those are impeccable concerns. Defer to
 `/clearpath:impeccable`.
@@ -49,25 +54,33 @@ Those are impeccable concerns. Defer to
 Write `TASTE_REVIEW.md` (or a `## Taste Review` section in
 `DESIGN_REVIEW.md`) with these sections:
 
-1. `## Product/design taste verdict` — overall: is this the right
-   product for the stated persona and JTBD?
-2. `## Conceptual risks` — what could mislead users or fail in
-   market.
-3. `## Brand/UX coherence notes` — is the tone consistent, is the
-   interaction model coherent across the flow.
-4. `## Recommended direction changes` — direction-level changes, not
-   pixel-level fixes.
-5. `## What must be approved by user` — explicit questions the user
-   must answer before the prototype can be approved.
+1. `## Taste verdict` — does this direction feel intentional,
+   differentiated, and right for the stated persona and JTBD?
+2. `## Generic/slop risks` — where the UI feels template-like,
+   AI-sloppy, forgettable, or misaligned with the product promise.
+3. `## Art-direction risks` — visual identity, product vibe,
+   typography direction, layout direction, density/rhythm, motion
+   direction, and emotional tone issues.
+4. `## Direction changes before approval` — direction-level changes,
+   not pixel-level fixes.
+5. `## User approval decisions` — explicit user-facing design choices
+   the user must approve before the prototype can be approved.
 
 ## Rules
 
-- Speak in direction, not pixels. "Make the headline 2px taller" is
-  impeccable, not taste. "Lead with the value proposition instead of
-  the feature list" is taste.
+- Speak in art-direction and product-taste terms, not concrete
+  implementation values. "The type system feels too generic for a
+  premium workflow product" is taste; "set h1 to 48px" is
+  impeccable.
 - Cite the screen and the user moment, not the CSS class.
-- Reject feedback that overlaps with impeccable. If the issue is
-  about craft, defer to impeccable.
+- Taste-design asks: does this direction feel intentional,
+  differentiated, and right for the product; does it avoid generic
+  SaaS/template/AI-slop; is the visual identity strong enough; does
+  the interface express the product promise?
+- Reject feedback that overlaps with impeccable at the execution
+  level. If the issue is measurable craft, consistency,
+  implementation readiness, or UI anti-pattern cleanup, defer to
+  impeccable.
 - If the prototype has no product brief, ask the user for the
   persona and JTBD before reviewing. Do not invent a brief.
 - Do not run code, write tests, or edit production files. This is a

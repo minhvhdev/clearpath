@@ -4,6 +4,10 @@ description: Web verification workflow. Playwright for regression/E2E tests, Chr
 
 # /clearpath:verify-web
 
+For normal usage, `/clearpath:go` is the default entrypoint. This
+skill is called by the autopilot router when the user request
+involves web UI verification.
+
 Web verification splits two roles. They are not interchangeable.
 
 - **Playwright test/CLI** is the official regression/E2E runner.

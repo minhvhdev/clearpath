@@ -3,6 +3,9 @@ description: Start a new product from scratch using the full Clearpath delivery 
 ---
 # /clearpath:start
 
+For normal usage, `/clearpath:go` is the default entrypoint. This
+skill is also called internally by the autopilot router after
+`/clearpath:init` for new projects.
 
 Use this when the user is building a product from zero.
 
@@ -13,6 +16,13 @@ Workflow:
 4. Produce a local prototype/design direction for any UI.
 5. Request design approval before production UI implementation.
 6. Build a task plan, execute in small subagent-ready tasks, verify with tests/browser QA, run role review, produce a release candidate, then stop at the Release Gate.
+7. Update `docs/clearpath/AUTOPILOT.md` as the phase advances
+   (Last route, Current phase, Design approval status,
+   Implementation status, Verification status, Release candidate
+   status, Open blockers, Next expected action, Last updated).
+   The file is continuity metadata, not a governance gate. The
+   SessionStart and UserPromptSubmit hooks are read-only and
+   never write this file.
 
 Reference lineage:
 - GSD Core: phase loop and context discipline.

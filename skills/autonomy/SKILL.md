@@ -4,6 +4,10 @@ description: Post-design-approval autonomy contract. Defines what agents do auto
 
 # /clearpath:autonomy
 
+For normal usage, `/clearpath:go` is the default entrypoint. This
+skill governs the code -> test -> fix -> retest -> release
+candidate phase that follows design approval.
+
 This skill defines the post-approval autonomy contract. Once the
 design and scope are approved (design gate and `PLAN.md` are
 canonical), the contract below governs when the agent acts on its

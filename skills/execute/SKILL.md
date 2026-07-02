@@ -4,6 +4,9 @@ description: Execute the approved plan with small tasks, TDD where available, an
 
 # /clearpath:execute
 
+For normal usage, `/clearpath:go` is the default entrypoint. This
+skill is called by the autopilot router during the post-approval
+implementation loop.
 
 Run the Execute phase.
 

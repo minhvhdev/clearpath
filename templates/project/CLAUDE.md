@@ -20,3 +20,11 @@ Post-approval autonomy follows `/clearpath:autonomy`. After design and scope are
 For web verification, use `/clearpath:verify-web` (Playwright for regression/E2E, Chrome DevTools MCP for live inspect/debug). For Windows native verification, use `/clearpath:verify-windows` (CursorTouch/Windows-MCP, opt-in, default-deny for PowerShell/Registry/FileSystem/Process).
 
 For project design reviews, run `/clearpath:taste-design` (product taste, concept, brand, UX direction) and `/clearpath:impeccable` (UI craft, execution polish) before design approval. The `design-critic` agent aggregates both.
+
+Clearpath Autopilot is the default UX. `/clearpath:go` is the
+default entrypoint. The SessionStart and UserPromptSubmit hooks
+inject routing context; the model should behave as if `/clearpath:go`
+was invoked when the user makes a normal product/development request.
+Do not require the user to pick a skill manually unless detection
+confidence is low. Read `docs/clearpath/AUTOPILOT.md` if it exists
+for the current detected mode, route, and next expected action.

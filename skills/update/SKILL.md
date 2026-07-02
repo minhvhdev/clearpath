@@ -3,6 +3,9 @@ description: Continue development on a project that already uses Clearpath artif
 ---
 # /clearpath:update
 
+For normal usage, `/clearpath:go` is the default entrypoint. This
+skill is also called internally by the autopilot router when the
+detected mode is `existing-clearpath-project`.
 
 Use this when `docs/clearpath/BOOT.md` or other Clearpath artifacts already exist.
 
@@ -14,6 +17,13 @@ Workflow:
 5. Use Serena/Codebase-Memory only for relevant code areas.
 6. Follow the unified delivery loop from Discuss/Spec through Release Candidate.
 7. Update summaries and indexes after each phase.
+8. Update `docs/clearpath/AUTOPILOT.md` with the active change id,
+   current phase, design approval status, implementation status,
+   verification status, release candidate status, open blockers,
+   next expected action, and last-updated timestamp. The file is
+   continuity metadata, not a governance gate. The SessionStart
+   and UserPromptSubmit hooks are read-only and never write this
+   file.
 
 
 ## Clearpath invariants

@@ -3,6 +3,9 @@ description: Adopt Clearpath for an existing product that has never used Clearpa
 ---
 # /clearpath:adopt
 
+For normal usage, `/clearpath:go` is the default entrypoint. This
+skill is also called internally by the autopilot router when the
+detected mode is `adopt-existing-project`.
 
 Use this when a product/repo already exists but has no Clearpath artifacts.
 
@@ -13,6 +16,13 @@ Workflow:
 4. Create `PROJECT_INDEX.json`, module cards for relevant domains only, and an adoption `CHANGE_INDEX.md`.
 5. Adopt enough to safely perform the current requested change, not to document the whole company.
 6. Continue through Spec, Plan, Execute, Verify, Review, and Release Candidate.
+7. Update `docs/clearpath/AUTOPILOT.md` with Detected mode
+   (`adopt-existing-project`), Last route
+   (`/clearpath:adopt`), Current phase, Open blockers, Next
+   expected action, and Last updated (ISO 8601). The file is
+   continuity metadata, not a governance gate. The SessionStart
+   and UserPromptSubmit hooks are read-only and never write this
+   file.
 
 
 ## Clearpath invariants

@@ -24,6 +24,10 @@ Do not read all Clearpath artifacts. Read `CURRENT_CONTEXT.md`, then use `ARTIFA
 - `existing-clearpath`: continuing a project that already uses Clearpath.
 - `adopt-existing`: continuing a product that has never used Clearpath.
 
+The Autopilot router uses the same names with a `Mode:` prefix when
+written to `docs/clearpath/AUTOPILOT.md`. See `/clearpath:go` and
+`docs/AUTOPILOT.md` for the routing contract.
+
 ## Required MCP Layer
 - Serena: symbol navigation and reference lookup.
 - Codebase-Memory: large-repo indexing and knowledge graph.
