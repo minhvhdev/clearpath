@@ -77,12 +77,9 @@ both when validating important web flows.
 ## Clearpath invariants
 
 - Do not treat artifacts as automatic context. Read
-  `docs/clearpath/BOOT.md`, then `CURRENT_CONTEXT.md`, then the
+  `.clearpath/docs/BOOT.md`, then `CURRENT_CONTEXT.md`, then the
   active `CHANGE_INDEX.md` before drilling into details.
-- Do not install Playwright browsers without
-  `.clearpath/approvals/allow-dependency-install`. The safety gate
-  denies `playwright install` and `npx -y` without it.
-- Preserve approval gates. Production UI changes still need
-  `.clearpath/approvals/design-approved`.
+- Do not implement production UI before the user approves the design
+  in chat.
 - Keep the main session as orchestrator. Use focused subagents for
   writing tests and for debugging failing flows.

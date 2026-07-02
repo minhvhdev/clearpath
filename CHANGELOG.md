@@ -2,11 +2,36 @@
 
 ## Unreleased
 
+### Simplified workflow (breaking)
+
+- **Removed** `PreToolUse` safety and design approval hook gates.
+- **Removed** `.clearpath/approvals/` sentinel file model.
+- **Design approval is now in chat**: prototype → present → user
+  replies Approve or Request changes → `/clearpath:autonomy` continues.
+- Updated skills, agents, templates, autopilot hooks, README, and
+  INSTALL to match the simplified workflow.
+
+### Required skills + doctor install
+
+- **Removed** plugin-local `/clearpath:taste-design` and
+  `/clearpath:impeccable` stubs.
+- **Mandatory** user-scope skills: `design-taste-frontend`,
+  `impeccable` (wired in `design-prototype`, `doctor`).
+- **`clearpath-doctor`** now checks skills, MCP, and CLI; emits
+  `CLEARPATH_DOCTOR_NEEDS_USER_APPROVAL` when install is needed.
+- **`clearpath-doctor-install`** installs to user scope after
+  `CLEARPATH_DOCTOR_INSTALL_APPROVED=1`.
+
+### Artifact layout + prototype rules
+
+- All Clearpath artifacts now live under `.clearpath/docs/` (project
+  state) and `.clearpath/docs/changes/<id>/` (change packs).
+- UI prototypes live under `.clearpath/prototype/` as **HTML + Tailwind
+  CSS** (Tailwind CDN).
+
 - Added Claude Code marketplace manifest at `.claude-plugin/marketplace.json`.
 - Added GitHub marketplace install instructions in `README.md` and
   `docs/INSTALL.md`.
-- No governance hook changes.
-- No MCP config changes.
 
 ## 0.4.3 - Approval Sentinel Hardening + Autonomy Gate
 
@@ -118,7 +143,7 @@ Windows-MCP boundary, or autopilot hook behavior change.
   art-direction/product-taste level, impeccable judges them at
   execution, consistency, implementation-readiness, and anti-pattern
   level.
-- `skills/design-prototype/SKILL.md` no longer claims the two
+- `skills/design-.clearpath/prototype/SKILL.md` no longer claims the two
   reviews are non-overlapping; instead it describes them as
   complementary at different altitudes and explains the order.
 - `agents/design-critic.md` and `agents/ux-designer.md` updated
@@ -137,10 +162,10 @@ Windows-MCP boundary, or autopilot hook behavior change.
 ## 0.4.2 - Autopilot State Patch
 
 Small follow-up to v0.4.2 Autopilot UX. Implements the
-`docs/clearpath/AUTOPILOT.md` continuity file that v0.4.2
+`.clearpath/docs/AUTOPILOT.md` continuity file that v0.4.2
 documented but did not implement.
 
-- New template `templates/project/docs/clearpath/AUTOPILOT.md`
+- New template `templates/project/.clearpath/docs/AUTOPILOT.md`
   ships the field list (Detected mode, Last route, Current phase,
   Design approval status, Implementation status, Verification
   status, Release candidate status, Open blockers, Next expected
@@ -148,7 +173,7 @@ documented but did not implement.
 - `skills/go/SKILL.md`, `skills/init/SKILL.md`,
   `skills/start/SKILL.md`, `skills/update/SKILL.md`, and
   `skills/adopt/SKILL.md` each gain a step that tells the model
-  to create or update `docs/clearpath/AUTOPILOT.md` when the
+  to create or update `.clearpath/docs/AUTOPILOT.md` when the
   skill actually drives a workflow step.
 - The file is explicitly described as **continuity metadata, not
   a governance gate** in the operator docs and in each skill.
@@ -188,7 +213,7 @@ longer needs to remember slash commands for normal use.
   are called by the autopilot router and that `/clearpath:go` is
   the default manual entrypoint. Behavior is unchanged.
 - `templates/project/CLAUDE.md` and
-  `templates/project/docs/clearpath/BOOT.md` updated to reference
+  `templates/project/.clearpath/docs/BOOT.md` updated to reference
   the autopilot context.
 - New `docs/AUTOPILOT.md` documents what the autopilot does and
   does not do, the detection modes, the clarification policy, the
@@ -225,7 +250,7 @@ Small hardening patch on top of v0.4.1 P0 workflow hardening.
   `require("fs").writeFileSync(...)`, bare `fs.writeFileSync(...)`)
   in `scripts/pre-tool-use-design-approval-gate.sh`. Four new
   regression cases in `tests/hook-smoke-test.sh` (deny without
-  approval, deny on `components/`, allow on `prototype/`, allow
+  approval, deny on `components/`, allow on `.clearpath/prototype/`, allow
   after design approval).
 - Hook detection surface for `cat >`, `tee`, `cp`/`mv`/`install`,
   `python open(..., "w")`, and the literal `writeFileSync(...)`
@@ -249,7 +274,7 @@ agents, and docs that operators can use.
   impeccable judges execution, consistency, implementation readiness,
   and anti-patterns. The `design-critic` agent aggregates them
   rather than duplicating their checklists.
-- P0: `skills/design-prototype/SKILL.md` now orchestrates
+- P0: `skills/design-.clearpath/prototype/SKILL.md` now orchestrates
   taste-design first, impeccable second, then `UI_CONTRACT.md` and
   `DESIGN_REVIEW.md`, then stops for user design approval.
 - P0: `agents/ux-designer.md` produces the prototype and contract;
@@ -274,7 +299,7 @@ agents, and docs that operators can use.
   approval sentinels). Hooks remain authoritative.
 - Docs: `README.md`, `docs/INSTALL.md`,
   `templates/project/CLAUDE.md`, and
-  `templates/project/docs/clearpath/BOOT.md` updated to reference
+  `templates/project/.clearpath/docs/BOOT.md` updated to reference
   the new skills.
 
 ## 0.4.1 - Governance Hardening

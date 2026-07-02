@@ -2,7 +2,10 @@
 set -euo pipefail
 PROJECT_DIR="${1:-${CLAUDE_PROJECT_DIR:-$(pwd)}}"
 PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
-mkdir -p "$PROJECT_DIR/docs/clearpath" "$PROJECT_DIR/docs/changes" "$PROJECT_DIR/.clearpath/approvals"
+DOCS="$PROJECT_DIR/.clearpath/docs"
+CHANGES="$DOCS/changes"
+PROTO="$PROJECT_DIR/.clearpath/prototype"
+mkdir -p "$DOCS" "$CHANGES" "$PROTO"
 
 copy_if_missing() {
   local src="$1" dst="$2"
@@ -15,14 +18,17 @@ copy_if_missing() {
   fi
 }
 
-copy_if_missing "$PLUGIN_ROOT/templates/project/docs/clearpath/BOOT.md" "$PROJECT_DIR/docs/clearpath/BOOT.md"
-copy_if_missing "$PLUGIN_ROOT/templates/project/docs/clearpath/CURRENT_CONTEXT.md" "$PROJECT_DIR/docs/clearpath/CURRENT_CONTEXT.md"
-copy_if_missing "$PLUGIN_ROOT/templates/project/docs/clearpath/STATE.md" "$PROJECT_DIR/docs/clearpath/STATE.md"
-copy_if_missing "$PLUGIN_ROOT/templates/project/docs/clearpath/PRODUCT.md" "$PROJECT_DIR/docs/clearpath/PRODUCT.md"
-copy_if_missing "$PLUGIN_ROOT/templates/project/docs/clearpath/DECISIONS.md" "$PROJECT_DIR/docs/clearpath/DECISIONS.md"
-copy_if_missing "$PLUGIN_ROOT/templates/project/docs/clearpath/PROJECT_INDEX.json" "$PROJECT_DIR/docs/clearpath/PROJECT_INDEX.json"
-copy_if_missing "$PLUGIN_ROOT/templates/project/docs/clearpath/ARTIFACT_INDEX.json" "$PROJECT_DIR/docs/clearpath/ARTIFACT_INDEX.json"
-copy_if_missing "$PLUGIN_ROOT/templates/project/docs/clearpath/policy.json" "$PROJECT_DIR/docs/clearpath/policy.json"
+TEMPLATE_DOCS="$PLUGIN_ROOT/templates/project/.clearpath/docs"
+copy_if_missing "$TEMPLATE_DOCS/BOOT.md" "$DOCS/BOOT.md"
+copy_if_missing "$TEMPLATE_DOCS/CURRENT_CONTEXT.md" "$DOCS/CURRENT_CONTEXT.md"
+copy_if_missing "$TEMPLATE_DOCS/STATE.md" "$DOCS/STATE.md"
+copy_if_missing "$TEMPLATE_DOCS/PRODUCT.md" "$DOCS/PRODUCT.md"
+copy_if_missing "$TEMPLATE_DOCS/DECISIONS.md" "$DOCS/DECISIONS.md"
+copy_if_missing "$TEMPLATE_DOCS/PROJECT_INDEX.json" "$DOCS/PROJECT_INDEX.json"
+copy_if_missing "$TEMPLATE_DOCS/ARTIFACT_INDEX.json" "$DOCS/ARTIFACT_INDEX.json"
+copy_if_missing "$TEMPLATE_DOCS/policy.json" "$DOCS/policy.json"
+copy_if_missing "$TEMPLATE_DOCS/AUTOPILOT.md" "$DOCS/AUTOPILOT.md"
+copy_if_missing "$PLUGIN_ROOT/templates/project/.clearpath/prototype/index.html" "$PROTO/index.html"
 if [[ ! -f "$PROJECT_DIR/CLAUDE.md" ]]; then
   cp "$PLUGIN_ROOT/templates/project/CLAUDE.md" "$PROJECT_DIR/CLAUDE.md"
   echo "created $PROJECT_DIR/CLAUDE.md"
@@ -41,7 +47,7 @@ cat <<EOF
 
 Clearpath project artifacts initialized.
 Next:
-  1. Review docs/clearpath/BOOT.md
+  1. Review .clearpath/docs/BOOT.md
   2. Start Claude Code at the project root with this plugin enabled
   3. Use /clearpath:start, /clearpath:update, or /clearpath:adopt
 EOF

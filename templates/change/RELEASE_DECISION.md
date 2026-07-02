@@ -5,7 +5,7 @@ canonical: true
 ---
 # Release Decision
 
-This file records a user decision; it is not itself an approval sentinel.
+This file records a user decision about release.
 
 ## Decision
 TBD

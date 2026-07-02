@@ -27,9 +27,10 @@ deviate and say why when a task genuinely does not fit the pattern.
   separate subagents rather than doing them serially in one session.
 - **Any review, QA, or security lens — always.** `product-strategist`,
   `design-critic`, `security-reviewer`, `qa-release-engineer`'s QA
-  half, and `taste-design`/`impeccable` reviews must run as fresh-
-  context subagents even for small changes. A reviewer that shares the
-  orchestrator's edit history is not an independent check.
+  half, and user-scope `design-taste-frontend` / `impeccable` reviews
+  must run as fresh-context subagents even for small changes. A
+  reviewer that shares the orchestrator's edit history is not an
+  independent check.
 - **Adoption/exploration of unfamiliar code** — always dispatch
   `codebase-architect` rather than exploring inline, regardless of
   size, because adoption work has no existing mental model to reuse.

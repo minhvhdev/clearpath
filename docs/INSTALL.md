@@ -56,77 +56,40 @@ clearpath-init
 
 or invoke `/clearpath:init` inside Claude Code.
 
-## Manual approval examples
+## Doctor and auto-install (user scope)
 
-After approving a UI prototype/design contract:
-
-```bash
-mkdir -p .clearpath/approvals
-touch .clearpath/approvals/design-approved
-```
-
-For dependency install approval:
+Run `/clearpath:doctor`. When output includes
+`CLEARPATH_DOCTOR_NEEDS_USER_APPROVAL: true`, the agent must ask you
+before installing. After you approve:
 
 ```bash
-touch .clearpath/approvals/allow-dependency-install
+CLEARPATH_DOCTOR_INSTALL_APPROVED=1 clearpath-doctor-install
 ```
 
-For production release approval:
+This copies missing skills into `~/.claude/skills/` (from local
+cache when available), merges MCP config into `~/.claude/settings.json`,
+and attempts CLI installs (uv, codebase-memory-mcp).
 
-```bash
-touch .clearpath/approvals/allow-production-release
-```
+Required user-scope skills for design work:
 
-For destructive shell operations:
+- `design-taste-frontend`
+- `impeccable`
 
-```bash
-touch .clearpath/approvals/allow-destructive-shell
-```
+## Design approval (in chat)
 
-For source-control finalization (`git commit`/`push`/`tag`/
-`rebase`/`filter-branch`/`--amend`/`reset --hard`; `git add` and
-read-only git commands do not need this):
+For UI work, the agent presents the prototype and asks you to:
 
-```bash
-touch .clearpath/approvals/allow-git-finalize
-```
+- **Approve** — continue to production implementation
+- **Request changes** — describe what to revise
 
-Remove sentinels when no longer needed.
-
-> The Clearpath hooks enforce these boundaries, but they are
-> guardrails, not a security sandbox. For defense in depth (deny
-> writes to approval sentinels in Claude Code permissions, enable
-> sandboxing where supported, fail closed if not) see
-> [docs/SECURITY_HARDENING.md](SECURITY_HARDENING.md).
-
-## Optional: defense-in-depth permissions template
-
-`templates/project/.claude/settings.json` is a recommended
-defense-in-depth template. The operator (or `clearpath-init`)
-must copy it into the target project for it to take effect. The
-file itself is intentionally schema-clean (no `_comment` field);
-operator-facing explanation lives in
-[docs/SECURITY_HARDENING.md](SECURITY_HARDENING.md).
+Reply in chat with e.g. `approve`, `looks good`, or `LGTM`.
 
 ## Optional MCP: Windows-MCP / CursorTouch
 
 If the project is a Windows native or Electron/WebView2 app, the
 operator can opt in to Windows-MCP for user-like UI testing. This
-is **not enabled by default** — it is intentionally absent from the
-plugin's own `.mcp.json`. See `/clearpath:verify-windows` for the
-safety boundary and `docs/SECURITY_HARDENING.md` for the rationale.
+is **not enabled by default**. See `/clearpath:verify-windows`.
 
 To opt in, copy the `windows-mcp` entry from
 `templates/project/.mcp.windows-mcp.example.json` into your
-project's own `.mcp.json` (merge it under the existing
-`mcpServers` key rather than overwriting the file):
-
-```bash
-cat templates/project/.mcp.windows-mcp.example.json
-```
-
-Then configure your MCP client to default-deny the `PowerShell`,
-`Registry`, `FileSystem`, and `Process` tools for that server if your
-client supports per-tool allow/deny lists — see
-`docs/SECURITY_HARDENING.md` for why this is not enforced by a
-Clearpath hook.
+project's own `.mcp.json`.

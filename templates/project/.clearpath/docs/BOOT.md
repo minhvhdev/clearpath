@@ -15,8 +15,8 @@ Do not read all Clearpath artifacts. Read `CURRENT_CONTEXT.md`, then use `ARTIFA
 ## Generated Current Pointers
 - Current phase: unknown
 - Active change: none
-- Artifact index: docs/clearpath/ARTIFACT_INDEX.json
-- Current context: docs/clearpath/CURRENT_CONTEXT.md
+- Artifact index: .clearpath/docs/ARTIFACT_INDEX.json
+- Current context: .clearpath/docs/CURRENT_CONTEXT.md
 <!-- CLEARPATH_INDEX_END -->
 
 ## Workflow Modes
@@ -25,7 +25,7 @@ Do not read all Clearpath artifacts. Read `CURRENT_CONTEXT.md`, then use `ARTIFA
 - `adopt-existing`: continuing a product that has never used Clearpath.
 
 The Autopilot router uses the same names with a `Mode:` prefix when
-written to `docs/clearpath/AUTOPILOT.md`. See `/clearpath:go` and
+written to `.clearpath/docs/AUTOPILOT.md`. See `/clearpath:go` and
 `docs/AUTOPILOT.md` for the routing contract.
 
 ## Required MCP Layer
@@ -43,12 +43,24 @@ written to `docs/clearpath/AUTOPILOT.md`. See `/clearpath:go` and
 - Other platforms: use `/clearpath:qa` Chrome DevTools MCP browser
   QA.
 
-## Approval Sentinels
-The user may manually create files under `.clearpath/approvals/` to authorize gated operations. Claude tools are blocked from creating or editing them.
+## Prototypes
 
-- `design-approved`: allows production UI edits after design approval.
-- `allow-dependency-install`: allows dependency install commands.
-- `allow-production-release`: allows production/infrastructure deploy commands.
-- `allow-destructive-data`: allows destructive DB/data commands.
-- `allow-secret-edit`: allows env/secret edits.
-- `allow-destructive-shell`: allows destructive shell cleanup.
+All UI prototypes live under `.clearpath/prototype/`. Use **HTML**
+and **Tailwind CSS** only (Tailwind CDN in `index.html`).
+
+## Required user-scope skills
+
+Design work requires these skills in `~/.claude/skills/`:
+
+- `design-taste-frontend`
+- `impeccable`
+
+Run `/clearpath:doctor` to verify. The agent may install missing
+skills/MCP to user scope after you approve.
+
+## Design Approval
+
+Design approval happens in chat. The agent presents the prototype,
+asks the user to **Approve** or **Request changes**, and continues
+implementation only after approval. Record the decision in
+`DESIGN_APPROVAL.md` in the active change pack.

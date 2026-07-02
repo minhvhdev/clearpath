@@ -44,10 +44,10 @@ cat > "$SCAF/package.json" <<'JSON'
 JSON
 assert_mode "scaffolded (manifest only) -> new-scaffolded-project" "new-scaffolded-project" "$SCAF"
 
-# 3. Clearpath project: docs/clearpath/BOOT.md exists.
+# 3. Clearpath project: .clearpath/docs/BOOT.md exists.
 CLP="$WORK/clearpath-proj"
-mkdir -p "$CLP/docs/clearpath"
-echo "# boot" > "$CLP/docs/clearpath/BOOT.md"
+mkdir -p "$CLP/.clearpath/docs"
+echo "# boot" > "$CLP/.clearpath/docs/BOOT.md"
 assert_mode "Clearpath project -> existing-clearpath-project" "existing-clearpath-project" "$CLP"
 
 # 4. Adopt-existing: real git repo with src and tracked files.

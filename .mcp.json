@@ -23,8 +23,11 @@
       ]
     },
     "codebase-memory-mcp": {
-      "command": "codebase-memory-mcp",
-      "args": []
+      "command": "npx",
+      "args": [
+        "-y",
+        "codebase-memory-mcp@latest"
+      ]
     }
   }
 }

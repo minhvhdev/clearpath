@@ -83,12 +83,12 @@ REASONS=()
 ADD_REASON() { REASONS+=("$1"); }
 
 # Existing Clearpath artifacts signal is the strongest.
-if has_any "$PROJECT_DIR" "docs/clearpath/BOOT.md" "docs/clearpath/CURRENT_CONTEXT.md" ".clearpath"; then
+if has_any "$PROJECT_DIR" ".clearpath/docs/BOOT.md" ".clearpath/docs/CURRENT_CONTEXT.md" ".clearpath/docs" ".clearpath/docs/BOOT.md" ".clearpath/docs/CURRENT_CONTEXT.md"; then
   MODE="existing-clearpath-project"
   CONFIDENCE="high"
   RECOMMENDED="/clearpath:update"
   INTERNAL_ROUTE="/clearpath:update"
-  NEXT="Project already has Clearpath artifacts. Read docs/clearpath/BOOT.md and CURRENT_CONTEXT.md first, then follow the active change pack. Use /clearpath:update for the next request."
+  NEXT="Project already has Clearpath artifacts. Read .clearpath/docs/BOOT.md and CURRENT_CONTEXT.md first, then follow the active change pack. Use /clearpath:update for the next request."
   ADD_REASON "Clearpath artifacts present"
   emit_json() {
     jq -nc \

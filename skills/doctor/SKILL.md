@@ -1,25 +1,62 @@
 ---
-description: Validate Clearpath plugin wiring, hook behavior, MCP prerequisites, and artifact health.
+description: Validate Clearpath wiring, required user-scope skills (design-taste-frontend, impeccable), MCP prerequisites, and artifact health. Ask user permission before auto-installing missing items.
 ---
+
 # /clearpath:doctor
 
+Run diagnostics and fix missing prerequisites when the user approves.
 
-Run diagnostics.
+## Required user-scope skills (mandatory for design work)
 
-Prefer executing:
-- `clearpath-doctor`
-- `clearpath-index`
-- `clearpath-artifact-lint`
+- `design-taste-frontend` — art direction, anti-slop taste
+- `impeccable` — UI craft, audit, polish, execution quality
 
-Report hard failures separately from warnings. If Claude CLI is available, also suggest `claude plugin validate . --strict` from the plugin root.
+These are **not** `/clearpath:taste-design` or `/clearpath:impeccable`. They
+are the full skills in the user's skill scope (`~/.claude/skills/`).
 
+## Required MCP servers (mandatory)
+
+- `chrome-devtools` — browser QA
+- `serena` — symbol navigation
+- `codebase-memory-mcp` — large-repo knowledge graph
+
+## Workflow
+
+1. Run `clearpath-doctor` (or `scripts/clearpath-doctor.sh`).
+2. Read the output. If you see `CLEARPATH_DOCTOR_NEEDS_USER_APPROVAL: true`,
+   summarize what is missing in plain language for the user.
+3. **Ask the user explicitly:**
+
+   > Clearpath is missing N prerequisites (skills / MCP / CLI).
+   > May I install them into your **user scope** (`~/.claude/skills/`,
+   > `~/.claude/settings.json`, global CLI tools)?
+   > Reply **yes** to proceed or **no** to skip.
+
+4. If the user approves, run:
+
+   ```bash
+   CLEARPATH_DOCTOR_INSTALL_APPROVED=1 clearpath-doctor-install
+   ```
+
+5. Re-run `clearpath-doctor` until required items pass (or report blockers).
+
+6. If install fails (e.g. skills not found locally to copy), tell the user
+   exactly what to install manually and where.
+
+## Do not
+
+- Run `clearpath-doctor-install` without explicit user approval.
+- Set `CLEARPATH_DOCTOR_INSTALL_APPROVED=1` without the user saying yes.
+- Proceed with `/clearpath:design-prototype` if required skills or MCPs
+  are still missing after the user declined install — stop and explain.
+
+## Other commands
+
+- `clearpath-index` — refresh artifact index
+- `clearpath-artifact-lint` — lint project artifacts
+- `claude plugin validate . --strict` — from plugin root when CLI available
 
 ## Clearpath invariants
 
-- Do not treat artifacts as automatic context. Read `docs/clearpath/BOOT.md`, then `CURRENT_CONTEXT.md`, then the active `CHANGE_INDEX.md` before drilling into details.
-- Use the three required MCP capabilities when relevant: Serena for symbol/navigation, Codebase-Memory for large-repo knowledge, and Chrome DevTools MCP for browser QA.
-- Dispatch a fresh-context subagent for heavy research, planning, execution, review, or QA -- see `docs/SUBAGENT_DISPATCH.md` for concrete thresholds (roughly >15 files/>2,000 lines to read, >8 turns of work, or any review/QA/security lens, which is always fresh-context).
-- Do not implement production UI before design approval exists.
-- Do not install dependencies, edit secrets, run destructive data commands, or deploy production without manual user approval outside Claude Code.
-- Record durable product/change state in artifacts, but summarize current state in `CURRENT_CONTEXT.md` and `CHANGE_INDEX.md`.
-
+- Read `.clearpath/docs/BOOT.md` when diagnosing a initialized project.
+- Record install outcome in `CURRENT_CONTEXT.md` if a workflow is active.

@@ -24,4 +24,4 @@ Choose `/clearpath:start`, `/clearpath:update`, or `/clearpath:adopt`.
 None recorded.
 
 ## Current Approvals
-Approval files must be created manually under `.clearpath/approvals/` by the user, not by Claude tools.
+Design approval happens in chat. Record approved designs in `DESIGN_APPROVAL.md` in the active change pack.

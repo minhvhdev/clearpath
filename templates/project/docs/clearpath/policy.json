@@ -1,9 +1,0 @@
-{
-  "schema_version": "clearpath.policy.v1",
-  "dependency_install": "manual_approval_required",
-  "production_deploy": "manual_approval_required",
-  "secret_edit": "manual_approval_required",
-  "destructive_data": "manual_approval_required",
-  "design_gate": "manual_approval_required",
-  "artifact_reading": "progressive_retrieval"
-}

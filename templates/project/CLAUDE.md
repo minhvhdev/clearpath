@@ -3,28 +3,32 @@
 Clearpath is active for this project.
 
 At session start:
-1. Read `docs/clearpath/BOOT.md`.
-2. Read `docs/clearpath/CURRENT_CONTEXT.md`.
-3. Use `docs/clearpath/ARTIFACT_INDEX.json` and the active `CHANGE_INDEX.md` before reading any detailed artifact.
+1. Read `.clearpath/docs/BOOT.md`.
+2. Read `.clearpath/docs/CURRENT_CONTEXT.md`.
+3. Use `.clearpath/docs/ARTIFACT_INDEX.json` and the active `CHANGE_INDEX.md` before reading any detailed artifact.
 
 Do not import Clearpath artifacts with `@` syntax. Artifacts are durable memory, not automatic context.
 
-Do not read all of `docs/clearpath/**` or `docs/changes/**`. Use progressive retrieval.
+Do not read all of `.clearpath/docs/**` or `.clearpath/docs/changes/**`. Use progressive retrieval.
 
-Approval sentinels under `.clearpath/approvals/` must be created manually by the user outside Claude Code. Claude tools must not create, edit, or remove them, and the safety gate denies any `Bash` command that mentions approval paths, sentinel filenames, or `*_APPROVAL.*` documents. Only narrow read-only checks (`test -f`, `[ -f ]`, `ls`, `cat`) against the approval directory are allowed.
+## Simple workflow
 
-Production UI changes under `components/`, `app/`, `pages/`, `src/`, `source/`, `mobile/`, `screens/`, `widgets/`, or `lib/widgets/` are blocked by the design gate until the user creates `.clearpath/approvals/design-approved`. The gate now covers `Edit|Write|MultiEdit` and `Bash` writes.
+For UI work:
+1. Build an **HTML + Tailwind CSS** prototype under `.clearpath/prototype/`
+   (use the Tailwind CDN; open `index.html` in a browser to preview).
+2. Ask the user to **Approve** or **Request changes** in chat.
+3. After approval, implement, test, fix, and verify autonomously via `/clearpath:autonomy`.
 
-Post-approval autonomy follows `/clearpath:autonomy`. After design and scope are approved, the agent may run the code -> test -> fix -> retest loop without asking, except where the contract says it must stop.
+All Clearpath artifacts (spec, plan, reviews, QA, etc.) live under
+`.clearpath/docs/` and `.clearpath/docs/changes/<id>/`.
 
-For web verification, use `/clearpath:verify-web` (Playwright for regression/E2E, Chrome DevTools MCP for live inspect/debug). For Windows native verification, use `/clearpath:verify-windows` (CursorTouch/Windows-MCP, opt-in, default-deny for PowerShell/Registry/FileSystem/Process).
+Do not implement production UI before the user approves the design in chat.
 
-For project design reviews, run `/clearpath:taste-design` (product taste, concept, brand, UX direction) and `/clearpath:impeccable` (UI craft, execution polish) before design approval. The `design-critic` agent aggregates both.
+For web verification, use `/clearpath:verify-web` (Playwright for regression/E2E, Chrome DevTools MCP for live inspect/debug). For Windows native verification, use `/clearpath:verify-windows` (CursorTouch/Windows-MCP, opt-in).
 
 Clearpath Autopilot is the default UX. `/clearpath:go` is the
 default entrypoint. The SessionStart and UserPromptSubmit hooks
 inject routing context; the model should behave as if `/clearpath:go`
 was invoked when the user makes a normal product/development request.
-Do not require the user to pick a skill manually unless detection
-confidence is low. Read `docs/clearpath/AUTOPILOT.md` if it exists
-for the current detected mode, route, and next expected action.
+Read `.clearpath/docs/AUTOPILOT.md` if it exists for the current
+detected mode, route, and next expected action.

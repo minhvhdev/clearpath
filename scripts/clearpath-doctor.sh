@@ -2,32 +2,108 @@
 set -u
 PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 PROJECT_DIR="${1:-${CLAUDE_PROJECT_DIR:-$(pwd)}}"
+REQ="$PLUGIN_ROOT/scripts/clearpath-requirements.json"
+HOME_DIR="${HOME:-$(cd ~ && pwd)}"
 fail=0
 warn=0
+missing_required=0
 pass(){ printf 'PASS: %s\n' "$*"; }
 warning(){ printf 'WARN: %s\n' "$*"; warn=$((warn+1)); }
 err(){ printf 'FAIL: %s\n' "$*"; fail=$((fail+1)); }
+note_missing(){ printf 'MISSING: %s\n' "$*"; missing_required=$((missing_required+1)); }
 # shellcheck source=clearpath-python.sh
 source "$PLUGIN_ROOT/scripts/clearpath-python.sh"
+
+expand_home() {
+  local p="$1"
+  if [[ "$p" == "~/"* ]]; then
+    printf '%s/%s' "$HOME_DIR" "${p#~/}"
+  elif [[ "$p" == ./* ]]; then
+    printf '%s/%s' "$HOME_DIR" "${p#./}"
+  else
+    printf '%s/%s' "$HOME_DIR" "$p"
+  fi
+}
 
 [[ -f "$PLUGIN_ROOT/.claude-plugin/plugin.json" ]] && pass "manifest exists" || err "missing .claude-plugin/plugin.json"
 [[ ! -f "$PLUGIN_ROOT/plugin.json" ]] && pass "no root plugin.json" || err "root plugin.json should not exist"
 [[ -f "$PLUGIN_ROOT/hooks/hooks.json" ]] && pass "hooks/hooks.json exists" || err "missing hooks/hooks.json"
 [[ -f "$PLUGIN_ROOT/.mcp.json" ]] && pass ".mcp.json exists" || err "missing .mcp.json"
+[[ -f "$REQ" ]] && pass "requirements manifest exists" || err "missing scripts/clearpath-requirements.json"
 
 if command -v jq >/dev/null 2>&1; then
   pass "jq installed"
   jq -e . "$PLUGIN_ROOT/.claude-plugin/plugin.json" >/dev/null && pass "plugin.json parses" || err "plugin.json invalid"
   jq -e . "$PLUGIN_ROOT/hooks/hooks.json" >/dev/null && pass "hooks.json parses" || err "hooks.json invalid"
   jq -e . "$PLUGIN_ROOT/.mcp.json" >/dev/null && pass ".mcp.json parses" || err ".mcp.json invalid"
+  jq -e . "$REQ" >/dev/null && pass "requirements.json parses" || err "requirements.json invalid"
 else
-  err "jq missing; hooks fail closed without jq"
+  err "jq missing (required)"
+  note_missing "cli:jq"
 fi
 
-command -v git >/dev/null 2>&1 && pass "git installed" || warning "git not found"
-command -v node >/dev/null 2>&1 && pass "node installed" || warning "node not found; chrome-devtools MCP via npx may fail"
-command -v npx >/dev/null 2>&1 && pass "npx installed" || warning "npx not found; chrome-devtools MCP may fail"
-command -v claude >/dev/null 2>&1 && pass "claude CLI installed" || warning "claude CLI not found in this shell; cannot run claude plugin validate here"
+if [[ -f "$REQ" ]] && command -v jq >/dev/null 2>&1; then
+  while IFS= read -r line; do
+    id="${line%%|*}"
+    cmd="${line#*|}"
+    if command -v "$cmd" >/dev/null 2>&1; then
+      pass "cli $id available ($cmd)"
+    else
+      hint="$(jq -r --arg id "$id" '.cli[] | select(.id==$id) | .install_hint' "$REQ")"
+      err "required cli missing: $id ($cmd)"
+      note_missing "cli:$id|$hint"
+    fi
+  done < <(jq -r '.cli[] | select(.required==true) | "\(.id)|\(.command)"' "$REQ")
+
+  while IFS= read -r skill; do
+    [[ -z "$skill" ]] && continue
+    found=0
+    marker="$(jq -r --arg id "$skill" '.skills[] | select(.id==$id) | .marker_file' "$REQ")"
+    while IFS= read -r d; do
+      [[ -z "$d" ]] && continue
+      if [[ -f "$(expand_home "$d")/$marker" ]]; then
+        found=1
+        break
+      fi
+    done < <(jq -r --arg id "$skill" '.skills[] | select(.id==$id) | .user_scope_dirs[]' "$REQ")
+    if [[ "$found" -eq 1 ]]; then
+      pass "user-scope skill present: $skill"
+    else
+      purpose="$(jq -r --arg id "$skill" '.skills[] | select(.id==$id) | .purpose' "$REQ")"
+      err "required user-scope skill missing: $skill"
+      note_missing "skill:$skill|$purpose"
+    fi
+  done < <(jq -r '.skills[] | select(.required==true) | .id' "$REQ")
+
+  mcp_user_ok=1
+  while IFS= read -r mcp; do
+    [[ -z "$mcp" ]] && continue
+    present=0
+    while IFS= read -r rel; do
+      [[ -z "$rel" ]] && continue
+      path="$(expand_home "$rel")"
+      [[ -f "$path" ]] || continue
+      if jq -e --arg id "$mcp" '.mcpServers[$id] // empty' "$path" >/dev/null 2>&1; then
+        present=1
+        break
+      fi
+    done < <(jq -r '.user_mcp_settings_paths[]' "$REQ")
+    if [[ "$present" -eq 1 ]]; then
+      pass "user-scope MCP configured: $mcp"
+    else
+      if jq -e --arg id "$mcp" '.mcpServers[$id] // empty' "$PLUGIN_ROOT/.mcp.json" >/dev/null 2>&1; then
+        warning "MCP $mcp in plugin only — not yet in user-scope settings"
+        note_missing "mcp:$mcp|merge from plugin .mcp.json into ~/.claude/settings.json"
+        mcp_user_ok=0
+      else
+        err "required MCP missing from plugin manifest: $mcp"
+        note_missing "mcp:$mcp|missing in plugin .mcp.json"
+        mcp_user_ok=0
+      fi
+    fi
+  done < <(jq -r '.mcp_servers[] | select(.required==true) | .id' "$REQ")
+  [[ "$mcp_user_ok" -eq 1 ]] && pass "all required MCP servers present in user scope or plugin+user merge pending"
+fi
 
 clearpath_python_print_diagnostics
 if clearpath_find_python; then
@@ -39,7 +115,7 @@ fi
 
 PROJECT_INITIALIZED=1
 MISSING_ARTIFACTS=()
-for rel in docs/clearpath/BOOT.md docs/clearpath/CURRENT_CONTEXT.md docs/clearpath/STATE.md docs/clearpath/ARTIFACT_INDEX.json; do
+for rel in .clearpath/docs/BOOT.md .clearpath/docs/CURRENT_CONTEXT.md .clearpath/docs/STATE.md .clearpath/docs/ARTIFACT_INDEX.json; do
   if [[ ! -f "$PROJECT_DIR/$rel" ]]; then
     PROJECT_INITIALIZED=0
     MISSING_ARTIFACTS+=("$rel")
@@ -56,35 +132,6 @@ else
   printf '%s\n' 'Next step: run /clearpath:init'
 fi
 
-# Large-repo adopt-mode escalation (v0.4.3): "do not read the whole
-# repo" for large-repo adoption is meaningless if missing Serena /
-# Codebase-Memory is only ever a warning. If the target project looks
-# like a large adopt-existing-project candidate, missing MCP
-# prerequisites become hard failures instead of warnings.
-LARGE_ADOPT=0
-if [[ -d "$PROJECT_DIR/.git" ]] && command -v git >/dev/null 2>&1; then
-  TRACKED_COUNT="$(cd "$PROJECT_DIR" && git ls-files 2>/dev/null | wc -l | tr -d ' ')"
-  if [[ "${TRACKED_COUNT:-0}" -ge 200 ]] && [[ ! -e "$PROJECT_DIR/docs/clearpath/BOOT.md" ]] && [[ ! -d "$PROJECT_DIR/.clearpath" ]]; then
-    LARGE_ADOPT=1
-  fi
-fi
-
-if command -v uvx >/dev/null 2>&1; then
-  pass "uvx installed"
-elif [[ "$LARGE_ADOPT" -eq 1 ]]; then
-  err "uvx not found; Serena MCP cannot run and the target project looks like a large (>= 200 tracked files) adopt-existing-project. Large-repo adoption without Serena risks reading the whole repo. Install uvx or explicitly accept limited-mode adoption before proceeding."
-else
-  warning "uvx not found; Serena MCP may fail"
-fi
-
-if command -v codebase-memory-mcp >/dev/null 2>&1; then
-  pass "codebase-memory-mcp installed"
-elif [[ "$LARGE_ADOPT" -eq 1 ]]; then
-  err "codebase-memory-mcp not on PATH and the target project looks like a large (>= 200 tracked files) adopt-existing-project. Install it or explicitly accept limited-mode adoption before proceeding."
-else
-  warning "codebase-memory-mcp not on PATH; install it before large-repo adoption"
-fi
-
 for f in "$PLUGIN_ROOT"/scripts/*.sh "$PLUGIN_ROOT"/bin/*; do
   [[ -f "$f" ]] || continue
   bash -n "$f" && pass "bash syntax ok: ${f#$PLUGIN_ROOT/}" || err "bash syntax failed: ${f#$PLUGIN_ROOT/}"
@@ -92,16 +139,27 @@ for f in "$PLUGIN_ROOT"/scripts/*.sh "$PLUGIN_ROOT"/bin/*; do
 done
 
 if [[ -x "$PLUGIN_ROOT/tests/hook-smoke-test.sh" ]]; then
-  "$PLUGIN_ROOT/tests/hook-smoke-test.sh" >/tmp/clearpath_hook_smoke.$$ 2>&1 && pass "hook smoke tests pass" || { err "hook smoke tests failed"; cat /tmp/clearpath_hook_smoke.$$; }
-  rm -f /tmp/clearpath_hook_smoke.$$ || true
+  hook_log="${TMPDIR:-/tmp}/clearpath_hook_smoke.$$"
+  "$PLUGIN_ROOT/tests/hook-smoke-test.sh" >"$hook_log" 2>&1 && pass "hook smoke tests pass" || { err "hook smoke tests failed"; cat "$hook_log"; }
+  rm -f "$hook_log" || true
 else
   err "missing executable tests/hook-smoke-test.sh"
 fi
 
 if [[ "$PROJECT_INITIALIZED" -eq 1 ]]; then
-  "$PLUGIN_ROOT/scripts/artifact-lint.sh" "$PROJECT_DIR" >/tmp/clearpath_artifact_lint.$$ 2>&1 && pass "artifact lint pass for project" || warning "artifact lint has findings for project; run scripts/artifact-lint.sh"
-  rm -f /tmp/clearpath_artifact_lint.$$ || true
+  lint_log="${TMPDIR:-/tmp}/clearpath_artifact_lint.$$"
+  "$PLUGIN_ROOT/scripts/artifact-lint.sh" "$PROJECT_DIR" >"$lint_log" 2>&1 && pass "artifact lint pass for project" || warning "artifact lint has findings for project; run scripts/artifact-lint.sh"
+  rm -f "$lint_log" || true
 fi
 
 printf '\nClearpath doctor completed with %d failure(s), %d warning(s).\n' "$fail" "$warn"
+
+if [[ "$missing_required" -gt 0 ]]; then
+  printf '\nCLEARPATH_DOCTOR_NEEDS_USER_APPROVAL: true\n'
+  printf 'CLEARPATH_DOCTOR_MISSING_COUNT: %d\n' "$missing_required"
+  printf 'CLEARPATH_DOCTOR_INSTALL_HINT: Ask the user for permission, then run:\n'
+  printf '  CLEARPATH_DOCTOR_INSTALL_APPROVED=1 clearpath-doctor-install\n'
+  printf 'Or invoke /clearpath:doctor and let the agent run that command after approval.\n'
+fi
+
 exit "$fail"

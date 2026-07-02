@@ -3,10 +3,11 @@ import json, os, re, sys, datetime
 from pathlib import Path
 
 project = Path(sys.argv[1] if len(sys.argv) > 1 else os.environ.get('CLAUDE_PROJECT_DIR', os.getcwd())).resolve()
-cp = project / 'docs' / 'clearpath'
-changes = project / 'docs' / 'changes'
+cp = project / '.clearpath' / 'docs'
+changes = cp / 'changes'
 cp.mkdir(parents=True, exist_ok=True)
 changes.mkdir(parents=True, exist_ok=True)
+(project / '.clearpath' / 'prototype').mkdir(parents=True, exist_ok=True)
 
 def read(path, default=''):
     try:
@@ -35,7 +36,7 @@ phase = phase or 'unknown'
 active_change = active_change or 'none'
 
 artifact_files = []
-for base in [cp, changes]:
+for base in [cp, changes, project / '.clearpath' / 'prototype']:
     if base.exists():
         for p in base.rglob('*'):
             if p.is_file() and p.name != 'ARTIFACT_INDEX.json':
@@ -55,19 +56,20 @@ idx = {
     'active_change_id': active_change,
     'current_phase': phase,
     'boot_files': [
-        'docs/clearpath/BOOT.md',
-        'docs/clearpath/CURRENT_CONTEXT.md'
+        '.clearpath/docs/BOOT.md',
+        '.clearpath/docs/CURRENT_CONTEXT.md'
     ],
     'current_state': [
-        'docs/clearpath/STATE.md',
-        'docs/clearpath/PRODUCT.md',
-        'docs/clearpath/DECISIONS.md',
-        'docs/clearpath/PROJECT_INDEX.json'
+        '.clearpath/docs/STATE.md',
+        '.clearpath/docs/PRODUCT.md',
+        '.clearpath/docs/DECISIONS.md',
+        '.clearpath/docs/PROJECT_INDEX.json'
     ],
+    'prototype_root': '.clearpath/prototype/',
     'active_change': {
         'index': active_index,
         'phase_required': {
-            'initialize': ['docs/clearpath/BOOT.md', 'docs/clearpath/CURRENT_CONTEXT.md'],
+            'initialize': ['.clearpath/docs/BOOT.md', '.clearpath/docs/CURRENT_CONTEXT.md'],
             'discuss': ['CHANGE.md'],
             'spec': ['CHANGE.md', 'SPEC.md'],
             'design': ['SPEC.md', 'UI_CONTRACT.md'],
@@ -83,7 +85,8 @@ idx = {
         'Read BOOT.md first.',
         'Read CURRENT_CONTEXT.md second.',
         'Use this index and the active CHANGE_INDEX.md before reading details.',
-        'Never read docs/changes/** or docs/clearpath/** wholesale.',
+        'Never read .clearpath/docs/changes/** or .clearpath/docs/** wholesale.',
+        'Prototypes live under .clearpath/prototype/ (HTML + Tailwind CSS).',
         'Evidence and archive files are on-demand only.'
     ],
     'artifacts': sorted(artifact_files, key=lambda x: x['path'])
@@ -94,6 +97,6 @@ boot = cp / 'BOOT.md'
 if boot.exists():
     text = boot.read_text(encoding='utf-8')
     text = re.sub(r'(?s)<!-- CLEARPATH_INDEX_START -->.*?<!-- CLEARPATH_INDEX_END -->',
-                  f'<!-- CLEARPATH_INDEX_START -->\n## Generated Current Pointers\n- Current phase: {phase}\n- Active change: {active_change}\n- Artifact index: docs/clearpath/ARTIFACT_INDEX.json\n- Current context: docs/clearpath/CURRENT_CONTEXT.md\n<!-- CLEARPATH_INDEX_END -->', text)
+                  f'<!-- CLEARPATH_INDEX_START -->\n## Generated Current Pointers\n- Current phase: {phase}\n- Active change: {active_change}\n- Artifact index: .clearpath/docs/ARTIFACT_INDEX.json\n- Current context: .clearpath/docs/CURRENT_CONTEXT.md\n- Prototype root: .clearpath/prototype/\n<!-- CLEARPATH_INDEX_END -->', text)
     boot.write_text(text, encoding='utf-8')
 print(json.dumps({'ok': True, 'artifact_index': str(cp / 'ARTIFACT_INDEX.json'), 'active_change_id': active_change, 'current_phase': phase}))

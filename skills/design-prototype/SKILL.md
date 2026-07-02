@@ -1,77 +1,77 @@
 ---
-description: Produce prototype, run taste-design and impeccable reviews, write UI_CONTRACT and DESIGN_REVIEW, then stop for user design approval before production UI edits.
+description: Produce HTML+Tailwind prototype using mandatory user-scope skills design-taste-frontend and impeccable, then wait for chat approval before production UI edits.
 ---
 
 # /clearpath:design-prototype
 
-For normal usage, `/clearpath:go` is the default entrypoint. This
-skill is called by the autopilot router when the user's request
-involves UI work, after the project mode is detected.
+For normal usage, `/clearpath:go` is the default entrypoint.
 
 Run the Design phase for UI changes.
 
-This skill orchestrates two complementary review skills. They may
-inspect the same UI dimensions at different altitudes, but they must
-not duplicate the same finding.
+## Mandatory user-scope skills
 
-- `/clearpath:taste-design` — art direction, anti-generic
-  frontend/product taste, concept, brand, and product-level UX
-  direction. Run first to validate the direction and prevent generic
-  or sloppy art direction.
-- `/clearpath:impeccable` — precise UI execution critique,
-  consistency, implementation readiness, anti-pattern cleanup, and
-  polish. Run second to refine the chosen direction into
-  production-quality UI execution.
+Before production UI work, you **must** read and follow these skills
+from the user's skill scope (not Clearpath plugin stubs):
 
-The `design-critic` agent then aggregates both reviews, checks
-unresolved issues and conflicts, and produces the final design
-verdict.
+1. **`design-taste-frontend`** — run first. Art direction, anti-slop
+   taste, brief inference, design read. Apply to the prototype brief
+   and HTML direction before building.
+2. **`impeccable`** — run second on the prototype HTML. Craft, audit,
+   polish, states, accessibility, anti-patterns. Use its setup flow
+   (`context.mjs`, register references) when applicable.
+
+If either skill is missing from user scope, **stop** and run
+`/clearpath:doctor` — ask the user for permission to install, then
+retry. Do not substitute improvised review checklists.
+
+Dispatch fresh-context subagents for each skill when the prototype
+spans multiple screens (see `docs/SUBAGENT_DISPATCH.md`).
+
+The `design-critic` agent aggregates outputs and issues a final verdict.
+
+## Prototype rules (mandatory)
+
+- Location: **only** under `.clearpath/prototype/`.
+- Format: **HTML + Tailwind CSS** (CDN `https://cdn.tailwindcss.com`).
+- No Vue, React, Svelte, or other frameworks in the prototype phase.
+- Preview: open `.clearpath/prototype/index.html` in a browser or
+  Chrome DevTools MCP.
 
 ## Required order
 
-1. Create the prototype or design delta under `prototype/` (HTML,
-   Vue, Svelte, Figma export, or a written screen-by-screen
-   description).
-2. Run `/clearpath:taste-design` and write `TASTE_REVIEW.md`. Resolve
-   critical art-direction and product-taste issues before continuing.
-3. Run `/clearpath:impeccable` and write `IMPECCABLE_REVIEW.md`.
-   Resolve critical execution, consistency, anti-pattern, and
-   implementation-readiness issues before continuing.
-4. Produce `UI_CONTRACT.md` describing hierarchy, layout, states,
-   responsive behavior, accessibility, and copy constraints.
-5. Produce `DESIGN_REVIEW.md` aggregating taste-design + impeccable
-   verdicts. The `design-critic` agent is the final aggregator; it
-   checks blockers and conflicts without redoing their work.
-6. Stop before production UI edits. Ask the user to approve manually
-   by creating `.clearpath/approvals/design-approved`. Claude tools
-   are blocked from creating approval sentinels.
+1. Read **`design-taste-frontend`** skill; output a one-line Design Read
+   in the change pack (`DESIGN_READ.md` or section in `CHANGE.md`).
+2. Build or update `.clearpath/prototype/index.html` (+ optional screens)
+   using HTML + Tailwind per both skills.
+3. Read and apply **`impeccable`** to the prototype — audit/polish until
+   craft-critical issues are resolved. Record summary in
+   `IMPECCABLE_REVIEW.md` (or impeccable's native output location).
+4. Write `UI_CONTRACT.md` in `.clearpath/docs/changes/<change-id>/`.
+5. Run **`design-critic`** → `DESIGN_REVIEW.md` with final verdict.
+6. **Present the prototype.** Ask:
+
+   > **Approve** — implement in production code.
+   > **Request changes** — describe revisions.
+
+7. Wait for user approval in chat before production UI edits.
+8. On approval: `DESIGN_APPROVAL.md` → `/clearpath:autonomy`.
+
+## Required MCP (mandatory)
+
+Use when relevant — if unavailable, run `/clearpath:doctor` first:
+
+- **Chrome DevTools MCP** — preview and inspect prototype
+- **Serena** — navigate production code paths for implementation planning
+- **Codebase-Memory MCP** — large-repo context
 
 ## Outputs
 
-- `prototype/` files or design delta.
-- `TASTE_REVIEW.md` from taste-design skill.
-- `IMPECCABLE_REVIEW.md` from impeccable skill.
-- `UI_CONTRACT.md` describing hierarchy, layout, states, responsive
-  behavior, accessibility, and copy constraints.
-- `DESIGN_REVIEW.md` aggregating both reviews, written or reviewed by
-  the `design-critic` agent.
+- `.clearpath/prototype/*.html`
+- `DESIGN_READ.md`, `IMPECCABLE_REVIEW.md`, `UI_CONTRACT.md`,
+  `DESIGN_REVIEW.md`, `DESIGN_APPROVAL.md` in the active change pack.
 
 ## Clearpath invariants
 
-- Do not treat artifacts as automatic context. Read
-  `docs/clearpath/BOOT.md`, then `CURRENT_CONTEXT.md`, then the
-  active `CHANGE_INDEX.md` before drilling into details.
-- Use the three required MCP capabilities when relevant: Serena for
-  symbol/navigation, Codebase-Memory for large-repo knowledge, and
-  Chrome DevTools MCP for browser QA.
-- Keep the main session as orchestrator. Use focused subagents for
-  the taste-design and impeccable reviews, and for the design-critic
-  aggregation -- these three are review/QA-lens work, so they are
-  always dispatched fresh-context per `docs/SUBAGENT_DISPATCH.md`,
-  regardless of change size.
-- Do not implement production UI before design approval exists.
-- Do not install dependencies, edit secrets, run destructive data
-  commands, or deploy production without manual user approval outside
-  Claude Code.
-- Record durable product/change state in artifacts, but summarize
-  current state in `CURRENT_CONTEXT.md` and `CHANGE_INDEX.md`.
+- Read `.clearpath/docs/BOOT.md`, then `CURRENT_CONTEXT.md`, then
+  `CHANGE_INDEX.md` before drilling into details.
+- Do not implement production UI before chat approval.

@@ -1,0 +1,89 @@
+{
+  "schema_version": "clearpath.requirements.v1",
+  "skills": [
+    {
+      "id": "design-taste-frontend",
+      "label": "design-taste-frontend",
+      "required": true,
+      "user_scope_dirs": [
+        ".claude/skills/design-taste-frontend",
+        ".cursor/skills/design-taste-frontend"
+      ],
+      "marker_file": "SKILL.md",
+      "purpose": "Art direction and anti-slop product taste before/during prototype."
+    },
+    {
+      "id": "impeccable",
+      "label": "impeccable",
+      "required": true,
+      "user_scope_dirs": [
+        ".claude/skills/impeccable",
+        ".cursor/skills/impeccable"
+      ],
+      "marker_file": "SKILL.md",
+      "purpose": "UI craft, polish, audit, and prototype/production execution quality."
+    }
+  ],
+  "mcp_servers": [
+    {
+      "id": "chrome-devtools",
+      "required": true,
+      "source": "plugin",
+      "purpose": "Browser QA and live inspect/debug."
+    },
+    {
+      "id": "serena",
+      "required": true,
+      "source": "plugin",
+      "purpose": "Symbol navigation and reference lookup."
+    },
+    {
+      "id": "codebase-memory-mcp",
+      "required": true,
+      "source": "plugin",
+      "purpose": "Large-repo indexing and knowledge graph retrieval."
+    }
+  ],
+  "cli": [
+    {
+      "id": "jq",
+      "required": true,
+      "command": "jq",
+      "install_hint": "Install jq for your OS package manager (winget install jqlang.jq, brew install jq, apt install jq)."
+    },
+    {
+      "id": "git",
+      "required": true,
+      "command": "git",
+      "install_hint": "Install Git from https://git-scm.com/downloads"
+    },
+    {
+      "id": "node",
+      "required": true,
+      "command": "node",
+      "install_hint": "Install Node.js LTS from https://nodejs.org/"
+    },
+    {
+      "id": "npx",
+      "required": true,
+      "command": "npx",
+      "install_hint": "Comes with Node.js npm."
+    },
+    {
+      "id": "uvx",
+      "required": true,
+      "command": "uvx",
+      "install_hint": "Install uv (provides uvx): pip install uv or https://docs.astral.sh/uv/getting-started/installation/"
+    },
+    {
+      "id": "codebase-memory-mcp",
+      "required": true,
+      "command": "codebase-memory-mcp",
+      "install_hint": "npm install -g codebase-memory-mcp (or use npx codebase-memory-mcp@latest via plugin MCP config)."
+    }
+  ],
+  "user_mcp_settings_paths": [
+    ".claude/settings.json",
+    ".claude.json"
+  ]
+}

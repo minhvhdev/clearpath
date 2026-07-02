@@ -5,8 +5,6 @@
 set -u
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || echo "")"
-# Resolve the detector: prefer the project's own copy, then the
-# plugin's copy, then the script's own directory.
 DETECT=""
 for cand in \
   "$PROJECT_DIR/scripts/clearpath-detect-mode.sh" \
@@ -45,37 +43,21 @@ else
   echo "CLEARPATH_AUTOPILOT_CONFIDENCE: low"
 fi
 
-# Preserve the existing minimal session-start tip so behavior in
-# existing projects does not regress.
-BOOT="$PROJECT_DIR/docs/clearpath/BOOT.md"
+BOOT="$PROJECT_DIR/.clearpath/docs/BOOT.md"
 if [[ -f "$BOOT" ]]; then
-  echo "CLEARPATH_SESSION_START: Read docs/clearpath/BOOT.md first. Use ARTIFACT_INDEX.json and CURRENT_CONTEXT.md for progressive retrieval."
+  echo "CLEARPATH_SESSION_START: Read .clearpath/docs/BOOT.md first. Use ARTIFACT_INDEX.json and CURRENT_CONTEXT.md for progressive retrieval."
 fi
 
 cat <<'EOF'
 CLEARPATH_AUTOPILOT_INSTRUCTIONS:
 - Default user entrypoint is /clearpath:go.
-- If the user says "build me X", "add Y", "fix Z", "review W" in plain
-  language, treat the request as an implement-change task and follow
-  /clearpath:go behavior. Do not require the user to pick a skill.
-- Only ask clarifying questions when the product goal is ambiguous
-  enough to risk building the wrong thing, when there are multiple
-  materially different UX/product directions, when credentials are
-  missing, when scope is exceeded, or when a governance boundary is
-  touched.
-- If a prototype or production UI is involved, follow
-  /clearpath:design-prototype: prototype -> taste-design ->
-  impeccable -> UI_CONTRACT.md -> DESIGN_REVIEW.md -> stop for user
-  design approval.
-- After design/scope approval, follow /clearpath:autonomy: code ->
-  test -> fix -> retest -> release candidate without asking routine
-  questions. Stop only at design approval, release candidate review,
-  or real blockage.
-- Source-control finalization (git commit/push, tags, rebase,
-  filter-branch, amend, hard reset) requires the
-  allow-git-finalize sentinel; the safety gate denies these
-  without it. git add and read-only git commands are not blocked.
-- Governance hooks remain the hard boundary for protected actions.
-  Autopilot is an orchestration layer, not a replacement.
+- If the user says "build me X", "add Y", "fix Z" in plain language,
+  follow /clearpath:go. Do not require the user to pick a skill.
+- For UI work: prototype -> present -> ask user to Approve or Request
+  changes in chat.
+- After approval, follow /clearpath:autonomy and keep going without
+  routine questions.
+- Stop only at the design checkpoint, release candidate review, or a
+  real blocker.
 EOF
 exit 0

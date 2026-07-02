@@ -16,7 +16,7 @@ Workflow:
 4. Create `PROJECT_INDEX.json`, module cards for relevant domains only, and an adoption `CHANGE_INDEX.md`.
 5. Adopt enough to safely perform the current requested change, not to document the whole company.
 6. Continue through Spec, Plan, Execute, Verify, Review, and Release Candidate.
-7. Update `docs/clearpath/AUTOPILOT.md` with Detected mode
+7. Update `.clearpath/docs/AUTOPILOT.md` with Detected mode
    (`adopt-existing-project`), Last route
    (`/clearpath:adopt`), Current phase, Open blockers, Next
    expected action, and Last updated (ISO 8601). The file is
@@ -62,10 +62,9 @@ large (see the script for the exact heuristic).
 
 ## Clearpath invariants
 
-- Do not treat artifacts as automatic context. Read `docs/clearpath/BOOT.md`, then `CURRENT_CONTEXT.md`, then the active `CHANGE_INDEX.md` before drilling into details.
+- Do not treat artifacts as automatic context. Read `.clearpath/docs/BOOT.md`, then `CURRENT_CONTEXT.md`, then the active `CHANGE_INDEX.md` before drilling into details.
 - Use the three required MCP capabilities when relevant: Serena for symbol/navigation, Codebase-Memory for large-repo knowledge, and Chrome DevTools MCP for browser QA.
 - Dispatch a fresh-context subagent for heavy research, planning, execution, review, or QA -- see `docs/SUBAGENT_DISPATCH.md` for concrete thresholds (roughly >15 files/>2,000 lines to read, >8 turns of work, or any review/QA/security lens, which is always fresh-context). Adoption/exploration of unfamiliar code always dispatches `codebase-architect`.
-- Do not implement production UI before design approval exists.
-- Do not install dependencies, edit secrets, run destructive data commands, or deploy production without manual user approval outside Claude Code.
+- Do not implement production UI before the user approves the design in chat.
 - Record durable product/change state in artifacts, but summarize current state in `CURRENT_CONTEXT.md` and `CHANGE_INDEX.md`.
 

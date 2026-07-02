@@ -1,13 +1,14 @@
 # Clearpath
 
-Clearpath is an approval-gated Claude Code product delivery plugin.
+Clearpath is a Claude Code product delivery plugin with a simple
+workflow: **prototype → approve in chat → agent builds autonomously**.
 
 It combines:
 
 - **GSD Core-style context engineering**: phase loop, fresh-context work, state artifacts.
 - **Superpowers-style development discipline**: spec-first, plan-first, TDD/review when available.
 - **gstack-style role review**: product/CEO, design, engineering, QA, security, release.
-- **Clearpath governance**: safety gate, design approval gate, release/dependency/data/secret boundaries, and a Context Ledger for artifact memory.
+- **Context Ledger**: artifact memory without reading everything at startup.
 
 ## Install from GitHub marketplace
 
@@ -57,8 +58,6 @@ also use namespaced skills such as:
 /clearpath:adopt
 /clearpath:doctor
 /clearpath:design-prototype
-/clearpath:taste-design
-/clearpath:impeccable
 /clearpath:execute
 /clearpath:verify
 /clearpath:verify-web
@@ -81,28 +80,23 @@ Review this existing codebase and prepare it for Clearpath.
 Fix the onboarding bug and verify it.
 ```
 
-Clearpath Autopilot detects whether the repo needs init, update, or
-adopt mode. You can also run `/clearpath:go` manually.
-
 Lifecycle:
 
 ```text
-detect -> clarify only if needed -> design/prototype -> user
-design approval -> implement -> verify -> release candidate ->
-user review
+detect -> prototype -> present -> user approves in chat ->
+implement -> test -> fix -> verify -> done
 ```
 
-Power users can still invoke individual skills manually. Governance
-warnings still apply — see
-[docs/SECURITY_HARDENING.md](docs/SECURITY_HARDENING.md) and the
-Governance section below.
+For UI work, the agent will:
 
-`docs/clearpath/AUTOPILOT.md` is a continuity artifact, not a
-gate. It is created or updated only when a Clearpath workflow
-skill (`/clearpath:go`, `/clearpath:init`, `/clearpath:start`,
-`/clearpath:update`, `/clearpath:adopt`) actually runs. The
-SessionStart and UserPromptSubmit hooks are read-only. See
-[docs/AUTOPILOT.md](docs/AUTOPILOT.md).
+1. Build an **HTML + Tailwind CSS** prototype under `.clearpath/prototype/`
+   and show you how to preview it.
+2. Ask you to **Approve** or **Request changes**.
+3. After you reply "approve" (or similar), continue building without
+   routine questions.
+
+`.clearpath/docs/AUTOPILOT.md` is a continuity artifact created by
+workflow skills. See [docs/AUTOPILOT.md](docs/AUTOPILOT.md).
 
 ## Structure
 
@@ -119,8 +113,6 @@ clearpath-plugin/
 ├── templates/
 └── docs/
 ```
-
-Marketplace and plugin manifests live inside `.claude-plugin/` (`plugin.json` and `marketplace.json`). All components live at the plugin root.
 
 ## Required local prerequisites
 
@@ -143,80 +135,19 @@ Run:
 ./bin/clearpath-doctor
 ```
 
-## Approval model
+## Doctor and prerequisites
 
-Claude tools are blocked from creating or editing `.clearpath/approvals/*` and from running `Bash` commands that mention approval paths, sentinel filenames, or `*_APPROVAL.*` documents. The user must create approval sentinels manually outside Claude Code.
+Run `/clearpath:doctor` to verify:
 
-Common sentinels:
+- User-scope skills: `design-taste-frontend`, `impeccable`
+- MCP servers: chrome-devtools, serena, codebase-memory-mcp
+- CLI: jq, git, node, npx, uvx, codebase-memory-mcp
 
-```text
-.clearpath/approvals/design-approved
-.clearpath/approvals/allow-dependency-install
-.clearpath/approvals/allow-production-release
-.clearpath/approvals/allow-destructive-data
-.clearpath/approvals/allow-secret-edit
-.clearpath/approvals/allow-destructive-shell
-.clearpath/approvals/allow-git-finalize
+If anything is missing, the agent will ask for permission, then run:
+
+```bash
+CLEARPATH_DOCTOR_INSTALL_APPROVED=1 clearpath-doctor-install
 ```
-
-## Governance (v0.4.3)
-
-Clearpath v0.4.3 fixes a confirmed approval-sentinel bypass (see
-[CHANGELOG.md](CHANGELOG.md)) and adds real hook enforcement for
-git finalize actions. The hook gates are still guardrails, not a
-security sandbox; they block specific bypass classes (sentinel
-writes — including path-indirection bypasses like `cd`-relative or
-variable-split paths as of v0.4.3 — dependency install via
-`yarn dlx`/`pnpm dlx`/`bunx`/`deno run -A`/absolute-path `pip3`/
-`npm install`, `find -delete`, `python3 shutil.rmtree`, git finalize
-via `git commit`/`push`/`tag`/`rebase`/`filter-branch`/`--amend`/
-`reset --hard` (new in v0.4.3, requires `allow-git-finalize`; `git
-add` and read-only git commands remain unblocked), and Bash writes to
-production UI files including `components/`, `app/`, `pages/`,
-`src/`, `source/`, `mobile/`, `screens/`, `widgets/`, `lib/widgets/`).
-For the full list and how the gate fails closed, see
-[docs/SECURITY_HARDENING.md](docs/SECURITY_HARDENING.md).
-
-`policy.json` is reference-only; the scripts are the runtime
-enforcement. Do not rely on editing `policy.json` to change behavior.
-
-### v0.4.1 P0 workflow hardening
-
-In addition to the governance hooks, v0.4.1 adds real workflow
-skills for the design and verification phases:
-
-- Design review splits into two complementary skills:
-  `/clearpath:taste-design` (art direction and anti-generic
-  frontend/product taste) and `/clearpath:impeccable` (precise UI
-  execution critique and implementation-quality polish). Taste-design
-  prevents the wrong or generic direction; impeccable makes the chosen
-  direction production-quality. The `design-critic` agent aggregates
-  both. The `design-prototype` skill orchestrates them in that order
-  and stops for user design approval before production UI edits.
-- Post-approval autonomy is codified in `/clearpath:autonomy`. After
-  design and scope are approved, the implementation engineer may
-  run the code -> test -> fix -> retest loop without asking, except
-  where the contract says it must stop (scope change, governance
-  boundary, missing credentials, unrecoverable test failure).
-  Source-control finalization (`git add`, `git commit`, `git push`,
-  tags, history rewrite) is **not** automatic; it requires explicit
-  user approval or a workflow permission.
-- Web verification splits two roles in `/clearpath:verify-web`:
-  Playwright for regression/E2E tests, Chrome DevTools MCP for
-  live inspect/debug. The two are not interchangeable.
-- Windows native verification is a separate skill,
-  `/clearpath:verify-windows`, that uses CursorTouch/Windows-MCP
-  for user-like UI testing. Windows-MCP is opt-in per project and
-  defaults to deny for PowerShell, Registry, FileSystem, and
-  Process tools.
-
-Hooks are guardrails, not a security sandbox. The optional
-`templates/project/.claude/settings.json` is a recommended defense-
-in-depth permissions layer (schema-clean, not auto-applied; the
-operator or init flow must copy it into the target project); the
-hooks remain authoritative. See
-[docs/SECURITY_HARDENING.md](docs/SECURITY_HARDENING.md) for the
-rationale.
 
 ## Validation
 
@@ -228,6 +159,4 @@ claude plugin validate . --strict
 ```
 
 `claude plugin validate` requires the Claude Code CLI and must be run
-in your local environment. The hook gates are guardrails, not a
-security sandbox — see [docs/SECURITY_HARDENING.md](docs/SECURITY_HARDENING.md)
-for defense-in-depth recommendations.
+in your local environment.

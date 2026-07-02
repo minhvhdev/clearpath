@@ -100,10 +100,10 @@ as opt-in by project.
 ## Clearpath invariants
 
 - Do not treat artifacts as automatic context. Read
-  `docs/clearpath/BOOT.md`, then `CURRENT_CONTEXT.md`, then the
+  `.clearpath/docs/BOOT.md`, then `CURRENT_CONTEXT.md`, then the
   active `CHANGE_INDEX.md` before drilling into details.
-- Preserve approval gates. Production UI changes still need
-  `.clearpath/approvals/design-approved`.
+- Do not implement production UI before the user approves the design
+  in chat.
 - Windows-MCP is a project opt-in, not a global default.
 - Keep the main session as orchestrator. Use focused subagents for
   long debug sessions.

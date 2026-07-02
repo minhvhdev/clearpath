@@ -4,10 +4,13 @@ Artifacts are source-of-truth memory, not startup context.
 
 ## Required files
 
-- `BOOT.md`: startup pointer file, <= 200 lines.
-- `CURRENT_CONTEXT.md`: compact materialized view, <= 300 lines.
-- `ARTIFACT_INDEX.json`: machine-readable retrieval index.
-- `CHANGE_INDEX.md`: per-change retrieval map.
+All paths are relative to the project root.
+
+- `.clearpath/docs/BOOT.md`: startup pointer file, <= 200 lines.
+- `.clearpath/docs/CURRENT_CONTEXT.md`: compact materialized view, <= 300 lines.
+- `.clearpath/docs/ARTIFACT_INDEX.json`: machine-readable retrieval index.
+- `.clearpath/docs/changes/<id>/CHANGE_INDEX.md`: per-change retrieval map.
+- `.clearpath/prototype/`: HTML + Tailwind CSS UI previews.
 
 ## Read protocol
 

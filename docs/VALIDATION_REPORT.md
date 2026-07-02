@@ -138,10 +138,10 @@ Design gate denies before manual design approval (through v0.4.3):
 
 Design gate allows:
 
-- `prototype/index.html`
+- `.clearpath/prototype/index.html`
 - `docs/examples/sample.css`
 - `src/lib/api.ts`
-- `prototype/App.vue` via Bash
+- `.clearpath/prototype/App.vue` via Bash
 - `docs/examples/note.md` via Bash
 - production UI files (Edit, Write, Bash) after manual
   `.clearpath/approvals/design-approved` sentinel

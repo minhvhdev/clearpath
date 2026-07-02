@@ -3,12 +3,14 @@
   "active_change_id": "none",
   "current_phase": "unknown",
   "boot_files": [
-    "docs/clearpath/BOOT.md",
-    "docs/clearpath/CURRENT_CONTEXT.md"
+    ".clearpath/docs/BOOT.md",
+    ".clearpath/docs/CURRENT_CONTEXT.md"
   ],
+  "prototype_root": ".clearpath/prototype/",
   "read_policy": [
     "Read BOOT.md first",
     "Never read all artifacts",
-    "Use active CHANGE_INDEX.md"
+    "Use active CHANGE_INDEX.md",
+    "Prototypes: HTML + Tailwind CSS under .clearpath/prototype/"
   ]
 }

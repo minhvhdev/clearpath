@@ -10,11 +10,11 @@ detected mode is `new-empty-project` or `new-scaffolded-project`.
 Initialize Clearpath project artifacts.
 
 Steps:
-1. Explain that initialization creates durable project memory under `docs/clearpath/`, `docs/changes/`, and `.clearpath/approvals/`.
+1. Explain that initialization creates durable project memory under `.clearpath/docs/` and `.clearpath/docs/changes/`.
 2. Run `clearpath-init` from the project root if the user approves initialization.
-3. Read `docs/clearpath/BOOT.md` and `docs/clearpath/CURRENT_CONTEXT.md` after initialization.
+3. Read `.clearpath/docs/BOOT.md` and `.clearpath/docs/CURRENT_CONTEXT.md` after initialization.
 4. Select one of the three workflows: new product, existing Clearpath project, or adoption of an existing non-Clearpath product.
-5. Create or update `docs/clearpath/AUTOPILOT.md`. This file is
+5. Create or update `.clearpath/docs/AUTOPILOT.md`. This file is
    continuity metadata for the Clearpath Autopilot, not a
    governance gate. Fill these fields: Detected mode, Last route,
    Current phase, Design approval status, Implementation status,
@@ -23,15 +23,14 @@ Steps:
    SessionStart and UserPromptSubmit hooks are read-only and
    never write this file; only the workflow skills that actually
    run do. The template is at
-   `templates/project/docs/clearpath/AUTOPILOT.md` for reference.
+   `templates/project/.clearpath/docs/AUTOPILOT.md` for reference.
 
 
 ## Clearpath invariants
 
-- Do not treat artifacts as automatic context. Read `docs/clearpath/BOOT.md`, then `CURRENT_CONTEXT.md`, then the active `CHANGE_INDEX.md` before drilling into details.
+- Do not treat artifacts as automatic context. Read `.clearpath/docs/BOOT.md`, then `CURRENT_CONTEXT.md`, then the active `CHANGE_INDEX.md` before drilling into details.
 - Use the three required MCP capabilities when relevant: Serena for symbol/navigation, Codebase-Memory for large-repo knowledge, and Chrome DevTools MCP for browser QA.
 - Dispatch a fresh-context subagent for heavy research, planning, execution, review, or QA -- see `docs/SUBAGENT_DISPATCH.md` for concrete thresholds (roughly >15 files/>2,000 lines to read, >8 turns of work, or any review/QA/security lens, which is always fresh-context).
-- Do not implement production UI before design approval exists.
-- Do not install dependencies, edit secrets, run destructive data commands, or deploy production without manual user approval outside Claude Code.
+- Do not implement production UI before the user approves the design in chat.
 - Record durable product/change state in artifacts, but summarize current state in `CURRENT_CONTEXT.md` and `CHANGE_INDEX.md`.
 

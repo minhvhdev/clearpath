@@ -133,11 +133,11 @@ assert_contains "invalid init override suggests CLEARPATH_PYTHON" "$CASE3B/out" 
 
 # 4. Doctor reports project-not-initialized separately from plugin/Python failure.
 CASE4="$WORK/case4"
-mkdir -p "$CASE4/bin" "$CASE4/project/docs/clearpath"
+mkdir -p "$CASE4/bin" "$CASE4/project/.clearpath/docs"
 make_fake_python "$CASE4/bin/python" "python"
 make_failing_launcher "$CASE4/bin/python3" "python3"
 make_failing_launcher "$CASE4/bin/py" "py"
-printf 'active_change_id: none\ncurrent_phase: unknown\n' > "$CASE4/project/docs/clearpath/STATE.md"
+printf 'active_change_id: none\ncurrent_phase: unknown\n' > "$CASE4/project/.clearpath/docs/STATE.md"
 : > "$CASE4/log"
 FAKE_PYTHON_LOG="$CASE4/log" PATH="$CASE4/bin:$PATH" "$ROOT/scripts/clearpath-doctor.sh" "$CASE4/project" > "$CASE4/out" 2>&1 \
   || fail "doctor should not fail only because project artifacts are not initialized"
