@@ -7,6 +7,8 @@ warn=0
 pass(){ printf 'PASS: %s\n' "$*"; }
 warning(){ printf 'WARN: %s\n' "$*"; warn=$((warn+1)); }
 err(){ printf 'FAIL: %s\n' "$*"; fail=$((fail+1)); }
+# shellcheck source=clearpath-python.sh
+source "$PLUGIN_ROOT/scripts/clearpath-python.sh"
 
 [[ -f "$PLUGIN_ROOT/.claude-plugin/plugin.json" ]] && pass "manifest exists" || err "missing .claude-plugin/plugin.json"
 [[ ! -f "$PLUGIN_ROOT/plugin.json" ]] && pass "no root plugin.json" || err "root plugin.json should not exist"
@@ -26,6 +28,33 @@ command -v git >/dev/null 2>&1 && pass "git installed" || warning "git not found
 command -v node >/dev/null 2>&1 && pass "node installed" || warning "node not found; chrome-devtools MCP via npx may fail"
 command -v npx >/dev/null 2>&1 && pass "npx installed" || warning "npx not found; chrome-devtools MCP may fail"
 command -v claude >/dev/null 2>&1 && pass "claude CLI installed" || warning "claude CLI not found in this shell; cannot run claude plugin validate here"
+
+clearpath_python_print_diagnostics
+if clearpath_find_python; then
+  pass "Python runtime usable: $CLEARPATH_PYTHON_LABEL ($CLEARPATH_PYTHON_VERSION)"
+else
+  err "Python runtime missing or unusable"
+  clearpath_python_not_found_message
+fi
+
+PROJECT_INITIALIZED=1
+MISSING_ARTIFACTS=()
+for rel in docs/clearpath/BOOT.md docs/clearpath/CURRENT_CONTEXT.md docs/clearpath/STATE.md docs/clearpath/ARTIFACT_INDEX.json; do
+  if [[ ! -f "$PROJECT_DIR/$rel" ]]; then
+    PROJECT_INITIALIZED=0
+    MISSING_ARTIFACTS+=("$rel")
+  fi
+done
+
+if [[ "$PROJECT_INITIALIZED" -eq 1 ]]; then
+  pass "Project initialization: INITIALIZED"
+else
+  printf '\nProject initialization: NOT INITIALIZED\n'
+  for rel in "${MISSING_ARTIFACTS[@]}"; do
+    printf '%s\n' "$rel missing"
+  done
+  printf '%s\n' 'Next step: run /clearpath:init'
+fi
 
 # Large-repo adopt-mode escalation (v0.4.3): "do not read the whole
 # repo" for large-repo adoption is meaningless if missing Serena /
@@ -69,7 +98,7 @@ else
   err "missing executable tests/hook-smoke-test.sh"
 fi
 
-if [[ -d "$PROJECT_DIR/docs/clearpath" ]]; then
+if [[ "$PROJECT_INITIALIZED" -eq 1 ]]; then
   "$PLUGIN_ROOT/scripts/artifact-lint.sh" "$PROJECT_DIR" >/tmp/clearpath_artifact_lint.$$ 2>&1 && pass "artifact lint pass for project" || warning "artifact lint has findings for project; run scripts/artifact-lint.sh"
   rm -f /tmp/clearpath_artifact_lint.$$ || true
 fi

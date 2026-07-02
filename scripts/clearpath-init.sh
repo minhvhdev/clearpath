@@ -29,7 +29,14 @@ if [[ ! -f "$PROJECT_DIR/CLAUDE.md" ]]; then
 else
   echo "exists  $PROJECT_DIR/CLAUDE.md"
 fi
-python3 "$PLUGIN_ROOT/scripts/clearpath-index.py" "$PROJECT_DIR" >/dev/null 2>&1 || true
+# shellcheck source=clearpath-python.sh
+source "$PLUGIN_ROOT/scripts/clearpath-python.sh"
+if clearpath_find_python; then
+  "${CLEARPATH_PYTHON_CMD[@]}" "$PLUGIN_ROOT/scripts/clearpath-index.py" "$PROJECT_DIR" >/dev/null 2>&1 || true
+elif [[ -n "${CLEARPATH_PYTHON:-}" ]]; then
+  clearpath_python_not_found_message
+  exit 49
+fi
 cat <<EOF
 
 Clearpath project artifacts initialized.

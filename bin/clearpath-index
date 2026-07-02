@@ -1,3 +1,10 @@
 #!/usr/bin/env bash
+set -euo pipefail
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-exec "$DIR/../scripts/clearpath-index.py" "$@"
+# shellcheck source=../scripts/clearpath-python.sh
+source "$DIR/../scripts/clearpath-python.sh"
+if ! clearpath_find_python; then
+  clearpath_python_not_found_message
+  exit 49
+fi
+exec "${CLEARPATH_PYTHON_CMD[@]}" "$DIR/../scripts/clearpath-index.py" "$@"
