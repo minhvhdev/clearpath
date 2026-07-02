@@ -71,8 +71,10 @@ CLEARPATH_AUTOPILOT_INSTRUCTIONS:
   test -> fix -> retest -> release candidate without asking routine
   questions. Stop only at design approval, release candidate review,
   or real blockage.
-- Source-control finalization (git add/commit/push, tags, history
-  rewrite) is NOT automatic; it requires explicit user approval.
+- Source-control finalization (git commit/push, tags, rebase,
+  filter-branch, amend, hard reset) requires the
+  allow-git-finalize sentinel; the safety gate denies these
+  without it. git add and read-only git commands are not blocked.
 - Governance hooks remain the hard boundary for protected actions.
   Autopilot is an orchestration layer, not a replacement.
 EOF

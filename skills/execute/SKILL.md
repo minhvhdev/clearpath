@@ -25,10 +25,13 @@ Rules:
 - For governance boundaries (dependency install, secret edit,
   destructive data, production release, destructive shell), the
   autonomy contract says: stop and ask. The hooks will deny anyway.
-- Do not run `git add`, `git commit`, `git push`, create tags, or
-  rewrite history unless the user explicitly asks or the active
-  workflow grants that permission. You may prepare a commit
-  summary and suggest files to stage.
+- Do not run `git commit`, `git push`, `git tag`, `git rebase`,
+  `git filter-branch`, `git commit --amend`, or `git reset --hard`
+  unless the user explicitly asks or the active workflow grants that
+  permission; the safety gate denies these without the
+  `allow-git-finalize` sentinel as of v0.4.3. `git add` and read-only
+  git commands are not blocked — you may stage changes and prepare a
+  commit summary for the user without a sentinel.
 
 
 ## Clearpath invariants
@@ -39,8 +42,11 @@ Rules:
 - Use the three required MCP capabilities when relevant: Serena for
   symbol/navigation, Codebase-Memory for large-repo knowledge, and
   Chrome DevTools MCP for browser QA.
-- Keep the main session as orchestrator. Use focused subagents for
-  heavy research, planning, execution, review, and QA.
+- Dispatch a fresh-context subagent for heavy research, planning,
+  execution, review, or QA -- see `docs/SUBAGENT_DISPATCH.md` for
+  concrete thresholds (roughly >15 files/>2,000 lines to read, >8
+  turns of work, or any review/QA/security lens, which is always
+  fresh-context).
 - Do not implement production UI before design approval exists.
 - Do not install dependencies, edit secrets, run destructive data
   commands, or deploy production without manual user approval

@@ -66,7 +66,9 @@ verdict.
   Chrome DevTools MCP for browser QA.
 - Keep the main session as orchestrator. Use focused subagents for
   the taste-design and impeccable reviews, and for the design-critic
-  aggregation.
+  aggregation -- these three are review/QA-lens work, so they are
+  always dispatched fresh-context per `docs/SUBAGENT_DISPATCH.md`,
+  regardless of change size.
 - Do not implement production UI before design approval exists.
 - Do not install dependencies, edit secrets, run destructive data
   commands, or deploy production without manual user approval outside

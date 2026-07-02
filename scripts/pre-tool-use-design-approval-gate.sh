@@ -39,8 +39,23 @@ has_design_approval() {
 
 is_approval_path() {
   local p="${1#./}"
-  [[ "$p" =~ (^|/)\.clearpath/approvals/ ]] && return 0
+  [[ "$p" =~ (^|/)\.clearpath/approvals(/|$) ]] && return 0
   [[ "$p" =~ (^|/)(DESIGN|DEPENDENCY|RELEASE|DATA)_APPROVAL\.(json|md|txt)$ ]] && return 0
+  return 1
+}
+
+# v0.4.3 fix: mirrors the safety gate's APPROVAL_DIR_RE/APPROVAL_NAME_RE
+# fix. The previous inline check required a literal trailing slash
+# after `.clearpath/approvals` and had no sentinel-basename fallback,
+# so `cd .clearpath/approvals && touch design-approved`,
+# `D=.clearpath/approvals; echo x > "$D/design-approved"`, and
+# `touch .clearpath/./approvals/design-approved` all bypassed the gate
+# (confirmed via live hook-script exploit test).
+command_mentions_approval_bash() {
+  local cmd="$1"
+  if grep -Eiq '(^|[^[:alnum:]_-])\.clearpath/approvals([^[:alnum:]_-]|$)' <<< "$cmd"; then return 0; fi
+  if grep -Eiq '(^|[^[:alnum:]_-])(design-approved|allow-production-release|allow-secret-edit|allow-design-implementation|allow-destructive-shell|allow-destructive-data|allow-dependency-install)([^[:alnum:]_-]|$)' <<< "$cmd"; then return 0; fi
+  if grep -Eiq '(design|dependency|release|data)_approval\.(json|md|txt)' <<< "$cmd"; then return 0; fi
   return 1
 }
 
@@ -143,7 +158,7 @@ fi
 
 if [[ "$TOOL_NAME" == "Bash" ]]; then
   # Block any write to approval files via Bash.
-  if grep -Eiq '(^|[^[:alnum:]._/-])(\.clearpath/approvals/|DESIGN_APPROVAL\.|DEPENDENCY_APPROVAL\.|RELEASE_APPROVAL\.|DATA_APPROVAL\.)' <<< "$COMMAND"; then
+  if command_mentions_approval_bash "$COMMAND"; then
     deny "Clearpath design approval files cannot be created or edited by Claude tools. User must approve manually outside Claude Code."
   fi
   # Extract write targets and run the production-UI heuristic on each.

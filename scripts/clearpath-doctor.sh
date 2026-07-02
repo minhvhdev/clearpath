@@ -25,9 +25,36 @@ fi
 command -v git >/dev/null 2>&1 && pass "git installed" || warning "git not found"
 command -v node >/dev/null 2>&1 && pass "node installed" || warning "node not found; chrome-devtools MCP via npx may fail"
 command -v npx >/dev/null 2>&1 && pass "npx installed" || warning "npx not found; chrome-devtools MCP may fail"
-command -v uvx >/dev/null 2>&1 && pass "uvx installed" || warning "uvx not found; Serena MCP may fail"
-command -v codebase-memory-mcp >/dev/null 2>&1 && pass "codebase-memory-mcp installed" || warning "codebase-memory-mcp not on PATH; install it before large-repo adoption"
 command -v claude >/dev/null 2>&1 && pass "claude CLI installed" || warning "claude CLI not found in this shell; cannot run claude plugin validate here"
+
+# Large-repo adopt-mode escalation (v0.4.3): "do not read the whole
+# repo" for large-repo adoption is meaningless if missing Serena /
+# Codebase-Memory is only ever a warning. If the target project looks
+# like a large adopt-existing-project candidate, missing MCP
+# prerequisites become hard failures instead of warnings.
+LARGE_ADOPT=0
+if [[ -d "$PROJECT_DIR/.git" ]] && command -v git >/dev/null 2>&1; then
+  TRACKED_COUNT="$(cd "$PROJECT_DIR" && git ls-files 2>/dev/null | wc -l | tr -d ' ')"
+  if [[ "${TRACKED_COUNT:-0}" -ge 200 ]] && [[ ! -e "$PROJECT_DIR/docs/clearpath/BOOT.md" ]] && [[ ! -d "$PROJECT_DIR/.clearpath" ]]; then
+    LARGE_ADOPT=1
+  fi
+fi
+
+if command -v uvx >/dev/null 2>&1; then
+  pass "uvx installed"
+elif [[ "$LARGE_ADOPT" -eq 1 ]]; then
+  err "uvx not found; Serena MCP cannot run and the target project looks like a large (>= 200 tracked files) adopt-existing-project. Large-repo adoption without Serena risks reading the whole repo. Install uvx or explicitly accept limited-mode adoption before proceeding."
+else
+  warning "uvx not found; Serena MCP may fail"
+fi
+
+if command -v codebase-memory-mcp >/dev/null 2>&1; then
+  pass "codebase-memory-mcp installed"
+elif [[ "$LARGE_ADOPT" -eq 1 ]]; then
+  err "codebase-memory-mcp not on PATH and the target project looks like a large (>= 200 tracked files) adopt-existing-project. Install it or explicitly accept limited-mode adoption before proceeding."
+else
+  warning "codebase-memory-mcp not on PATH; install it before large-repo adoption"
+fi
 
 for f in "$PLUGIN_ROOT"/scripts/*.sh "$PLUGIN_ROOT"/bin/*; do
   [[ -f "$f" ]] || continue

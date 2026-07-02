@@ -36,14 +36,19 @@ After approval, the agent may, without asking the user:
 - run the project's existing dev / build commands,
 - prepare a commit summary and suggest files to stage.
 
-## Source-control finalization (requires explicit user approval)
+## Source-control finalization (hook-enforced as of v0.4.3)
 
-The agent must not run `git add`, `git commit`, `git push`, create
-tags, rewrite history, or otherwise finalize source-control
-changes unless the user explicitly asks or the active workflow
-grants that permission. The agent may prepare a commit summary and
-suggest files to stage, but source-control finalization requires
-explicit approval.
+The agent must not run `git commit`, `git push`, `git tag`,
+`git rebase`, `git filter-branch`, `git commit --amend`, or
+`git reset --hard` unless the user explicitly asks or the active
+workflow grants that permission. As of v0.4.3 this is backed by a
+real `PreToolUse` hook: `pre-tool-use-safety-gate.sh` denies these
+commands unless `.clearpath/approvals/allow-git-finalize` exists, so
+attempting them without the sentinel fails even if the model
+misjudges the boundary. `git add` (staging for review) and read-only
+git commands (`status`, `diff`, `log`, `show`, a plain `git reset`)
+are not blocked — the agent may stage changes and prepare a commit
+summary for the user without a sentinel.
 
 ## Must stop and ask the user
 
@@ -58,8 +63,9 @@ and stop) when ANY of the following is true:
 - A governance boundary is touched: dependency install, secret
   edit, destructive data, production release, or destructive shell
   (these still require manual approval sentinels).
-- Source-control finalization is needed (`git add`, `git commit`,
-  `git push`, tag, history rewrite).
+- Source-control finalization is needed (`git commit`, `git push`,
+  tag, rebase, filter-branch, amend, hard reset) — the hook will
+  deny it without `allow-git-finalize` anyway.
 - Credentials or external service access are missing.
 - Tests cannot be made green after a reasonable number of attempts
   (the agent must record the failure mode, not loop forever).

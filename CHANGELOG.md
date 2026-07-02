@@ -1,5 +1,106 @@
 # Changelog
 
+## Unreleased
+
+- Added Claude Code marketplace manifest at `.claude-plugin/marketplace.json`.
+- Added GitHub marketplace install instructions in `README.md` and
+  `docs/INSTALL.md`.
+- No governance hook changes.
+- No MCP config changes.
+
+## 0.4.3 - Approval Sentinel Hardening + Autonomy Gate
+
+Security-critical patch fixing a confirmed approval-sentinel bypass,
+plus the fixes from a full deep audit of the plugin against its
+stated GSD Core / Superpowers / gstack synthesis. This release also
+finally aligns the plugin manifest version with the CHANGELOG (the
+`0.4.2` entries below were never reflected in
+`.claude-plugin/plugin.json`, which still read `0.4.1`).
+
+- **P0 SECURITY FIX**: `pre-tool-use-safety-gate.sh` and
+  `pre-tool-use-design-approval-gate.sh` had a confirmed, live-tested
+  approval-sentinel bypass. The previous boundary regex treated `/` as
+  a "safe" character and required a literal trailing slash after
+  `.clearpath/approvals`, so splitting the path across a shell
+  variable (`D=.clearpath/approvals; touch "$D/allow-..."`) or a bare
+  `cd .clearpath/approvals && touch design-approved` bypassed the gate
+  entirely — confirmed by directly invoking both hook scripts and
+  observing the sentinel file get created. `design-approved`
+  additionally had no dedicated name-pattern at all (only `allow-*`
+  names were recognized), making it the most exposed sentinel. Fixed:
+  the directory pattern no longer requires a trailing slash, every
+  known sentinel basename (including `design-approved`) is matched
+  independently of the directory path, and the boundary character set
+  excludes `/` so path indirection no longer helps. Regression tests
+  for `cd`-relative, variable-split, two-variable-split, `../`
+  traversal, and dot-slash obfuscation bypass patterns added to
+  `tests/hook-smoke-test.sh`.
+- **New hard gate**: source-control finalization (`git commit`,
+  `git push`, `git tag`, `git rebase`, `git filter-branch`,
+  `git commit --amend`, `git reset --hard`, `git push --force`) now
+  requires a new `.clearpath/approvals/allow-git-finalize` sentinel in
+  `pre-tool-use-safety-gate.sh`. Previously this boundary existed only
+  as skill prose (`skills/autonomy/SKILL.md`) with zero hook backing —
+  a deep audit confirmed grep found no git-related pattern in either
+  hook script. `git add` and read-only git commands (`status`, `diff`,
+  `log`, `show`, plain `reset`) remain unblocked so the agent can
+  still stage changes for user review without a sentinel.
+- Fixed `scripts/clearpath-detect-mode.sh`: `has_any()`'s `*.sln`/
+  `*.csproj` entries were dead code — `[[ -e "$dir/*.sln" ]]` checks
+  for a file literally named `*.sln`, it does not glob-expand. C#/.NET
+  repos were invisible to the adopt-vs-new detector. `has_any()` now
+  expands glob patterns with `nullglob` when the argument contains
+  `*`/`?`.
+- Fixed `scripts/user-prompt-autopilot.sh`'s intent classifier: prompts
+  using review/audit/inspection language (including the plugin's own
+  README example, "Review this existing codebase and prepare it for
+  Clearpath.") classified as `unrelated` and got no routing context.
+  Added a `review|audit|assess|inspect|analyze|look at|check out|take
+  a look|walk through` pattern mapped to `implement-change`.
+- `skills/adopt/SKILL.md` and `agents/codebase-architect.md` now spell
+  out the MCP fallback policy operationally (previously it existed
+  only in `docs/CLEARPATH_PRODUCT_DIRECTION.md`, which those files
+  never referenced): warn-and-ask or explicit limited-mode for large
+  repos without Serena/Codebase-Memory, quiet fallback only for small
+  repos. `scripts/clearpath-doctor.sh` now escalates missing
+  `uvx`/`codebase-memory-mcp` from a warning to a hard failure when the
+  target project looks like a large (>= 200 tracked files)
+  adopt-existing-project candidate.
+- New `templates/project/.mcp.windows-mcp.example.json` and a new
+  "Windows-MCP / CursorTouch (opt-in boundary)" section in
+  `docs/SECURITY_HARDENING.md`: previously `docs/INSTALL.md` pointed
+  to `SECURITY_HARDENING.md` for the Windows-MCP rationale, but that
+  section did not exist, and no example opt-in `.mcp.json` snippet
+  existed despite `skills/verify-windows/SKILL.md` promising one.
+- `skills/review/SKILL.md` now binds each of the six `REVIEW.md`
+  lenses to a named Clearpath agent (`product-strategist`,
+  `design-critic`, `codebase-architect`, `qa-release-engineer`,
+  `security-reviewer`) instead of listing lenses with no dispatch
+  contract. `templates/change/REVIEW.md` sections now carry an
+  `agent:` comment.
+- `agents/qa-release-engineer.md`: added `Write`/`Edit` tools (it was
+  writing `QA.md`/`RELEASE_CANDIDATE.md` via `Bash`-only access
+  before), added an explicit rationale for combining gstack's QA and
+  release roles into one agent, and added a boundary statement so it
+  no longer self-certifies security risk that belongs to
+  `security-reviewer`. `agents/security-reviewer.md` gained the
+  matching boundary statement.
+- New `docs/SUBAGENT_DISPATCH.md` gives the previously-vague "keep the
+  main session as orchestrator, use focused subagents for heavy work"
+  instruction (repeated near-verbatim across ~18 skill files) concrete
+  thresholds: read volume, turn volume, parallelizability, and
+  "review/QA/security lenses are always fresh-context." Every skill
+  file's invariant line now references it instead of the generic
+  sentence. This does not add hook enforcement (no hook can observe a
+  dispatch decision before it happens) but replaces vague prose with
+  an operational default the model can actually apply consistently.
+- `.serena/` (a maintainer-local Serena config for working on this
+  repo, not a shipped plugin artifact) is no longer tracked in git;
+  added to `.gitignore`.
+- Plugin manifest version bumped from `0.4.1` to `0.4.3` to match the
+  CHANGELOG, which had already reached three `0.4.2` entries without
+  the manifest ever being updated.
+
 ## 0.4.2 - Design Skill Alignment
 
 Small wording alignment before final review. No behavior change.

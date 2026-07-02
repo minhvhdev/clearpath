@@ -1,9 +1,23 @@
-# Clearpath Security Hardening (v0.4.1)
+# Clearpath Security Hardening (v0.4.3)
 
-This document describes the v0.4.1 governance hardening and how the
-plugin enforces its approval boundaries. It is not a security audit;
-it is the operator-facing description of what the gates actually do,
-and where defense-in-depth must be added on top.
+This document describes the v0.4.1-v0.4.3 governance hardening and how
+the plugin enforces its approval boundaries. It is not a security
+audit; it is the operator-facing description of what the gates
+actually do, and where defense-in-depth must be added on top.
+
+**v0.4.3 fixed a confirmed live bypass** of the approval-sentinel
+protection described below: the previous boundary regex in both hook
+scripts treated `/` as a "safe" character and required a literal
+trailing slash after `.clearpath/approvals`, so splitting a sentinel
+path across a shell variable, or a bare `cd .clearpath/approvals &&
+touch design-approved`, bypassed the gate entirely. This was verified
+by directly invoking the hook scripts and observing the sentinel file
+get created. The fix and regression tests are in
+`scripts/pre-tool-use-safety-gate.sh`,
+`scripts/pre-tool-use-design-approval-gate.sh`, and
+`tests/hook-smoke-test.sh`. If you run an older Clearpath version, this
+sentinel-bypass gap applies to `v0.4.0` through `v0.4.2` — upgrade to
+`v0.4.3` or later.
 
 ## What the hooks enforce
 
@@ -41,6 +55,14 @@ well-resourced actor from running arbitrary commands.
     when the path contains `.env`, `.npmrc`, `.pypirc`, `.netrc`,
     `id_rsa`, `id_ed25519`, `secret`, or `secrets`.
   - Remote-script piping (`curl ... | sh`, `wget ... | sh`).
+  - Source-control finalization (new in v0.4.3), including
+    `git commit`, `git push` (including `--force`/`-f`), `git tag`,
+    `git rebase`, `git filter-branch`/`filter-repo`,
+    `git commit --amend`, and `git reset --hard`, unless
+    `.clearpath/approvals/allow-git-finalize` exists. `git add` and
+    read-only git commands (`status`, `diff`, `log`, `show`, a plain
+    `git reset`) are not blocked, so the agent can still stage changes
+    for the user to review without a sentinel.
 
 - `pre-tool-use-design-approval-gate.sh` denies:
   - `Edit|Write|MultiEdit` and `Bash` writes (redirects, `tee`,
@@ -113,6 +135,39 @@ governance should layer additional defenses:
    Approval sentinels are governance state; treat them as a
    machine-policy surface and manage them with your normal change
    process.
+
+## Windows-MCP / CursorTouch (opt-in boundary)
+
+Windows-MCP (or CursorTouch) is **not** part of the plugin's default
+MCP layer. It is intentionally absent from `.mcp.json` so that no
+project gets it enabled by default. It is only relevant for Windows
+native / Electron / WebView2 desktop projects (`/clearpath:verify-windows`).
+
+**What "opt-in" actually means today:** the Clearpath hooks do not
+inspect MCP server configuration, so they cannot technically deny a
+Windows-MCP tool call the way they deny `Bash`/`Edit`/`Write` calls.
+The opt-in boundary is enforced by:
+
+1. Windows-MCP is not in the plugin's `.mcp.json` — a project only
+   gets it if the operator adds it to a project-level `.mcp.json`.
+2. `templates/project/.mcp.windows-mcp.example.json` (see below) is
+   the only sanctioned way to add it, and it is a file the operator
+   copies in manually — `clearpath-init` does not do this
+   automatically.
+3. `/clearpath:verify-windows` instructs the agent to use only the
+   safe interaction surface (`Screenshot`, `Snapshot`, `Click`, `Type`,
+   `Scroll`, `Move`, `Shortcut`, `Wait`, `WaitFor`, `App`, `Clipboard`)
+   and to treat `PowerShell`, `Registry`, `FileSystem`, and `Process`
+   tools as denied unless the user has explicitly approved them for
+   that specific test session.
+
+**Known limitation:** step 3 is a skill-level instruction, not a hook
+gate — there is currently no PreToolUse hook for MCP tool calls in
+Claude Code's hook surface that this plugin can attach to. If your
+Claude Code version or MCP client supports per-tool allow/deny lists,
+apply them directly to the `PowerShell`, `Registry`, `FileSystem`, and
+`Process` Windows-MCP tools as an additional layer; do not rely on the
+skill instruction alone for a regulated environment.
 
 ## `templates/project/.claude/settings.json` (defense-in-depth template)
 

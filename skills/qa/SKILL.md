@@ -37,8 +37,11 @@ Write concise evidence to `QA.md` and put raw details under
 - Use the three required MCP capabilities when relevant: Serena for
   symbol/navigation, Codebase-Memory for large-repo knowledge, and
   Chrome DevTools MCP for browser QA.
-- Keep the main session as orchestrator. Use focused subagents for
-  heavy research, planning, execution, review, and QA.
+- Dispatch a fresh-context subagent for heavy research, planning,
+  execution, review, or QA -- see `docs/SUBAGENT_DISPATCH.md` for
+  concrete thresholds (roughly >15 files/>2,000 lines to read, >8
+  turns of work, or any review/QA/security lens, which is always
+  fresh-context).
 - Do not implement production UI before design approval exists.
 - Do not install dependencies, edit secrets, run destructive data
   commands, or deploy production without manual user approval

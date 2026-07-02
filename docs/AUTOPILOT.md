@@ -36,8 +36,12 @@ what they want. They should not have to memorize slash commands.
 - It does not replace the safety and design approval gates. Those
   hooks remain the hard boundary for protected actions.
 - It does not weaken the source-control finalization boundary.
-  `git add` / `git commit` / `git push` / tags / history rewrite
-  still require explicit user approval.
+  `git commit` / `git push` / tags / `git rebase` / `filter-branch` /
+  `--amend` / `reset --hard` require the
+  `.clearpath/approvals/allow-git-finalize` sentinel (hook-enforced as
+  of v0.4.3, not just skill prose). `git add` and read-only git
+  commands remain unblocked so the agent can stage changes for
+  review.
 - It does not weaken the Windows-MCP opt-in boundary.
   CursorTouch/Windows-MCP remains opt-in per project, default-deny
   for PowerShell / Registry / FileSystem / Process.

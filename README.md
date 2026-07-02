@@ -9,7 +9,35 @@ It combines:
 - **gstack-style role review**: product/CEO, design, engineering, QA, security, release.
 - **Clearpath governance**: safety gate, design approval gate, release/dependency/data/secret boundaries, and a Context Ledger for artifact memory.
 
-## Install / test locally
+## Install from GitHub marketplace
+
+Add the marketplace:
+
+```text
+/plugin marketplace add minhvhdev/clearpath
+```
+
+Install Clearpath:
+
+```text
+/plugin install clearpath@clearpath-marketplace
+```
+
+Reload plugins:
+
+```text
+/reload-plugins
+```
+
+Start:
+
+```text
+/clearpath:go
+```
+
+Or just describe what you want to build or change.
+
+## Local development install
 
 From the parent directory of this plugin:
 
@@ -92,7 +120,7 @@ clearpath-plugin/
 └── docs/
 ```
 
-Only `.claude-plugin/plugin.json` lives inside `.claude-plugin/`. All components live at the plugin root.
+Marketplace and plugin manifests live inside `.claude-plugin/` (`plugin.json` and `marketplace.json`). All components live at the plugin root.
 
 ## Required local prerequisites
 
@@ -128,18 +156,25 @@ Common sentinels:
 .clearpath/approvals/allow-destructive-data
 .clearpath/approvals/allow-secret-edit
 .clearpath/approvals/allow-destructive-shell
+.clearpath/approvals/allow-git-finalize
 ```
 
-## Governance (v0.4.1)
+## Governance (v0.4.3)
 
-Clearpath v0.4.1 is a governance hardening release. The hook gates
-are still guardrails, not a security sandbox; they block specific
-bypass classes (sentinel writes, dependency install via
+Clearpath v0.4.3 fixes a confirmed approval-sentinel bypass (see
+[CHANGELOG.md](CHANGELOG.md)) and adds real hook enforcement for
+git finalize actions. The hook gates are still guardrails, not a
+security sandbox; they block specific bypass classes (sentinel
+writes — including path-indirection bypasses like `cd`-relative or
+variable-split paths as of v0.4.3 — dependency install via
 `yarn dlx`/`pnpm dlx`/`bunx`/`deno run -A`/absolute-path `pip3`/
-`npm install`, `find -delete`, `python3 shutil.rmtree`, and Bash
-writes to production UI files including `components/`, `app/`,
-`pages/`, `src/`, `source/`, `mobile/`, `screens/`, `widgets/`,
-`lib/widgets/`). For the full list and how the gate fails closed, see
+`npm install`, `find -delete`, `python3 shutil.rmtree`, git finalize
+via `git commit`/`push`/`tag`/`rebase`/`filter-branch`/`--amend`/
+`reset --hard` (new in v0.4.3, requires `allow-git-finalize`; `git
+add` and read-only git commands remain unblocked), and Bash writes to
+production UI files including `components/`, `app/`, `pages/`,
+`src/`, `source/`, `mobile/`, `screens/`, `widgets/`, `lib/widgets/`).
+For the full list and how the gate fails closed, see
 [docs/SECURITY_HARDENING.md](docs/SECURITY_HARDENING.md).
 
 `policy.json` is reference-only; the scripts are the runtime

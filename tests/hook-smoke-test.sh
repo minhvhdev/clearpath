@@ -81,6 +81,45 @@ touch "$TMP/.clearpath/approvals/allow-dependency-install"
 expect_allow "safety allows npm ci after manual dependency approval" "$safety" '{"tool_name":"Bash","tool_input":{"command":"npm ci"}}'
 rm "$TMP/.clearpath/approvals/allow-dependency-install"
 
+# v0.4.3 hardening: approval-sentinel bypass via path indirection.
+# These were CONFIRMED live bypasses before the v0.4.3 regex fix
+# (cd-relative, variable-split, two-variable-split, dot-slash
+# obfuscation, and ../ traversal all evaded the previous boundary
+# regex, which treated `/` as a "safe" character and required a
+# literal trailing slash after `.clearpath/approvals`).
+expect_deny "safety blocks cd-relative touch of design-approved" "$safety" '{"tool_name":"Bash","tool_input":{"command":"cd .clearpath/approvals && touch design-approved"}}'
+expect_deny "safety blocks cd-relative touch of allow-production-release" "$safety" '{"tool_name":"Bash","tool_input":{"command":"cd .clearpath/approvals && touch allow-production-release"}}'
+expect_deny "safety blocks variable-split path to allow-production-release" "$safety" '{"tool_name":"Bash","tool_input":{"command":"D=.clearpath/approvals; touch \"$D/allow-production-release\""}}'
+expect_deny "safety blocks variable-split path to design-approved" "$safety" '{"tool_name":"Bash","tool_input":{"command":"D=.clearpath/approvals; echo x > \"$D/design-approved\""}}'
+expect_deny "safety blocks two-variable-split path to design-approved" "$safety" '{"tool_name":"Bash","tool_input":{"command":"DIR=\".clearpath\"; SUB=\"approvals\"; touch \"$DIR/$SUB/design-approved\""}}'
+expect_deny "safety blocks dot-slash obfuscation" "$safety" '{"tool_name":"Bash","tool_input":{"command":"touch .clearpath/./approvals/design-approved"}}'
+expect_deny "safety blocks ../ traversal to design-approved" "$safety" '{"tool_name":"Bash","tool_input":{"command":"cd some/nested/dir && touch ../../../.clearpath/approvals/design-approved"}}'
+expect_deny "design gate blocks cd-relative touch of design-approved" "$design" '{"tool_name":"Bash","tool_input":{"command":"cd .clearpath/approvals && touch design-approved"}}'
+expect_deny "design gate blocks variable-split path to design-approved" "$design" '{"tool_name":"Bash","tool_input":{"command":"D=.clearpath/approvals; echo x > \"$D/design-approved\""}}'
+expect_deny "design gate blocks ../ traversal to design-approved" "$design" '{"tool_name":"Bash","tool_input":{"command":"mkdir -p sub && cd sub && touch ../.clearpath/approvals/design-approved"}}'
+
+# v0.4.3: source-control finalization gate. git add and read-only git
+# commands remain unblocked; commit/push/tag/rebase/filter-branch/
+# amend/hard-reset require allow-git-finalize.
+expect_deny "safety blocks git commit" "$safety" '{"tool_name":"Bash","tool_input":{"command":"git commit -m \"wip\""}}'
+expect_deny "safety blocks git push" "$safety" '{"tool_name":"Bash","tool_input":{"command":"git push origin main"}}'
+expect_deny "safety blocks git push --force" "$safety" '{"tool_name":"Bash","tool_input":{"command":"git push --force origin main"}}'
+expect_deny "safety blocks git tag" "$safety" '{"tool_name":"Bash","tool_input":{"command":"git tag v1.0.0"}}'
+expect_deny "safety blocks git rebase" "$safety" '{"tool_name":"Bash","tool_input":{"command":"git rebase main"}}'
+expect_deny "safety blocks git commit --amend" "$safety" '{"tool_name":"Bash","tool_input":{"command":"git commit --amend -m fix"}}'
+expect_deny "safety blocks git reset --hard" "$safety" '{"tool_name":"Bash","tool_input":{"command":"git reset --hard HEAD~1"}}'
+expect_deny "safety blocks git filter-branch" "$safety" '{"tool_name":"Bash","tool_input":{"command":"git filter-branch --force"}}'
+expect_allow "safety allows git add" "$safety" '{"tool_name":"Bash","tool_input":{"command":"git add -A"}}'
+expect_allow "safety allows git status" "$safety" '{"tool_name":"Bash","tool_input":{"command":"git status"}}'
+expect_allow "safety allows git diff" "$safety" '{"tool_name":"Bash","tool_input":{"command":"git diff --stat"}}'
+expect_allow "safety allows git log" "$safety" '{"tool_name":"Bash","tool_input":{"command":"git log --oneline -5"}}'
+expect_allow "safety allows plain git reset (not --hard)" "$safety" '{"tool_name":"Bash","tool_input":{"command":"git reset HEAD~1"}}'
+
+touch "$TMP/.clearpath/approvals/allow-git-finalize"
+expect_allow "safety allows git commit after allow-git-finalize" "$safety" '{"tool_name":"Bash","tool_input":{"command":"git commit -m \"wip\""}}'
+expect_allow "safety allows git push after allow-git-finalize" "$safety" '{"tool_name":"Bash","tool_input":{"command":"git push origin main"}}'
+rm "$TMP/.clearpath/approvals/allow-git-finalize"
+
 expect_deny "design malformed JSON denies" "$design" "not json"
 expect_deny "design blocks Next pages JS" "$design" '{"tool_name":"Edit","tool_input":{"file_path":"pages/index.js"}}'
 expect_deny "design blocks component JS" "$design" '{"tool_name":"Edit","tool_input":{"file_path":"src/components/Button.js"}}'

@@ -62,6 +62,16 @@ echo "export const App = () => null" > "$ADOPT/src/app/index.tsx"
 (cd "$ADOPT" && git -c user.email=t@t -c user.name=t add -A && git -c user.email=t@t -c user.name=t commit -q -m "add")
 assert_mode "adopt-existing project -> adopt-existing-project" "adopt-existing-project" "$ADOPT"
 
+# 4b. v0.4.3: *.sln glob detection (previously dead code -- `[[ -e
+# "$dir/*.sln" ]]` checked for a file literally named "*.sln"). A
+# lone .sln file with no src/app/lib and no .git should now be
+# recognized as a code manifest (-> new-scaffolded-project), not
+# silently treated as new-empty-project.
+SLN="$WORK/sln-project"
+mkdir -p "$SLN"
+: > "$SLN/MyApp.sln"
+assert_mode ".sln file -> new-scaffolded-project (manifest glob fix)" "new-scaffolded-project" "$SLN"
+
 # 5. SessionStart hook emits routing context without writing files.
 CLAUDE_PROJECT_DIR="$EMPTY" SESS_OUT="$("$SESSION")"
 if grep -q "CLEARPATH_AUTOPILOT: active" <<< "$SESS_OUT" && grep -q "CLEARPATH_AUTOPILOT_MODE:" <<< "$SESS_OUT"; then
@@ -102,6 +112,19 @@ if grep -q "CLEARPATH_AUTOPILOT_PROMPT_INTENT: unrelated" <<< "$UNRELATED_OUT" \
 else
   echo "FAIL: user-prompt-autopilot injected routing for unrelated prompt" >&2
   printf '%s\n' "$UNRELATED_OUT" >&2
+  exit 1
+fi
+
+# 8. v0.4.3: the README's own flagship adopt example must classify,
+# not fall through to unrelated (this was CONFIRMED failing before
+# the classifier fix).
+REVIEW_INPUT='{"user_prompt":"Review this existing codebase and prepare it for Clearpath."}'
+REVIEW_OUT="$(printf '%s' "$REVIEW_INPUT" | CLAUDE_PROJECT_DIR="$ADOPT" "$PROMPT_HOOK")"
+if grep -q "CLEARPATH_AUTOPILOT_PROMPT_INTENT: implement-change" <<< "$REVIEW_OUT"; then
+  echo "PASS: user-prompt-autopilot classifies the README adopt example"
+else
+  echo "FAIL: user-prompt-autopilot still classifies the README adopt example as unrelated" >&2
+  printf '%s\n' "$REVIEW_OUT" | head -3 >&2
   exit 1
 fi
 

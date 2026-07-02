@@ -45,15 +45,28 @@ LOWER_COMMAND="$(printf '%s' "$COMMAND" | tr '[:upper:]' '[:lower:]')"
 # Approval sentinels: anything under .clearpath/approvals/ or the explicit
 # sentinel basenames the safety gate reads. Creating, modifying, or
 # deleting these is never allowed from Claude tools.
-# Token boundary: anything non-alphanumeric that is not a dot, dash,
-# underscore, or slash. Captures spaces, ;, &, |, =, <, >, etc.
-APPROVAL_PATH_RE='(^|[^[:alnum:]._/-])(\.clearpath/approvals/|\./\.clearpath/approvals/)'
-APPROVAL_NAME_RE='allow-(production-release|secret-edit|design-implementation|destructive-shell|destructive-data|dependency-install)|allow-?(prod[-_]?release|secret|design|destructive|dependency)'
+#
+# v0.4.3 fix: the previous boundary set `[^[:alnum:]._/-]` treated `/`
+# as a "safe" character, so it never matched as a boundary before the
+# literal `.clearpath/approvals` substring, AND the path pattern
+# required a literal trailing slash. Splitting the path across a shell
+# variable (`D=.clearpath/approvals; touch "$D/allow-..."`) or using a
+# bare `cd .clearpath/approvals && touch <sentinel>` broke both
+# assumptions and bypassed the gate entirely (confirmed via live
+# hook-script exploit test). The fixed boundary set below excludes `/`
+# from the "safe" set (so `/` and `=` and `;` etc. all count as valid
+# boundaries), the directory pattern no longer requires a trailing
+# slash, and every known sentinel *basename* (including `design-approved`,
+# which previously had no dedicated pattern at all) is matched
+# independently of the directory path, so splitting the path across
+# variables or `cd` no longer helps.
+APPROVAL_DIR_RE='(^|[^[:alnum:]_-])\.clearpath/approvals([^[:alnum:]_-]|$)'
+APPROVAL_NAME_RE='(^|[^[:alnum:]_-])(design-approved|allow-production-release|allow-secret-edit|allow-design-implementation|allow-destructive-shell|allow-destructive-data|allow-dependency-install)([^[:alnum:]_-]|$)'
 APPROVAL_DOC_RE='(design|dependency|release|data)_approval\.(json|md|txt)'
 
 is_approval_path() {
   local p="${1#./}"
-  [[ "$p" =~ (^|/)\.clearpath/approvals/ ]] && return 0
+  [[ "$p" =~ (^|/)\.clearpath/approvals(/|$) ]] && return 0
   [[ "$p" =~ (^|/)(DESIGN|DEPENDENCY|RELEASE|DATA)_APPROVAL\.(json|md|txt)$ ]] && return 0
   return 1
 }
@@ -67,10 +80,15 @@ command_mentions_approval() {
   # Return 0 (true) if the lower-cased command string touches any
   # approval sentinel path or sentinel name. This is the fail-closed
   # baseline; the narrow allow checks below are the only exception.
+  # Matches independently on (a) any reference to the approvals
+  # directory itself, regardless of trailing slash or how the path
+  # was constructed, and (b) any known sentinel basename appearing
+  # anywhere in the command as a standalone token, regardless of what
+  # precedes it (start of string, `/`, `=`, `;`, whitespace, etc.).
   local cmd="$1"
-  if grep -Eiq "$APPROVAL_PATH_RE" <<< "$cmd"; then return 0; fi
+  if grep -Eiq "$APPROVAL_DIR_RE" <<< "$cmd"; then return 0; fi
   if grep -Eiq "$APPROVAL_DOC_RE" <<< "$cmd"; then return 0; fi
-  if grep -Eiq "(^|[;&|[:space:]])$APPROVAL_NAME_RE" <<< "$cmd"; then return 0; fi
+  if grep -Eiq "$APPROVAL_NAME_RE" <<< "$cmd"; then return 0; fi
   return 1
 }
 
@@ -163,6 +181,24 @@ if [[ "$TOOL_NAME" == "Bash" ]]; then
   if grep -Eiq '(drop[[:space:]]+database|drop[[:space:]]+schema|truncate[[:space:]]+table|delete[[:space:]]+from|prisma[[:space:]]+migrate[[:space:]]+reset|rails[[:space:]]+db:drop|sequelize[[:space:]]+db:drop)' <<< "$LOWER_COMMAND"; then
     if ! allow_sentinel "allow-destructive-data"; then
       deny "Clearpath data gate: destructive database/data operation requires manual user approval outside Claude Code."
+    fi
+  fi
+
+  # Source-control finalization gate (v0.4.3). `git add` (staging for
+  # review) and read-only git commands (status/diff/log/show/plain
+  # reset) remain unblocked so the agent can prepare changes for the
+  # user to inspect. Anything that finalizes or rewrites history --
+  # commit, push, tag, rebase, filter-branch, amend, or a hard reset --
+  # requires the operator to create allow-git-finalize outside Claude
+  # Code. This closes the gap where the post-approval autonomy
+  # contract described this boundary in skill prose only with zero
+  # hook backing.
+  if grep -Eiq '(^|[;&|[:space:]])git[[:space:]]+(commit|push|tag|rebase|filter-branch|filter-repo)([[:space:]]|$)' <<< "$LOWER_COMMAND" \
+     || grep -Eiq '(^|[;&|[:space:]])git[[:space:]]+commit[[:space:]]+.*--amend' <<< "$LOWER_COMMAND" \
+     || grep -Eiq '(^|[;&|[:space:]])git[[:space:]]+reset[[:space:]]+.*--hard' <<< "$LOWER_COMMAND" \
+     || grep -Eiq '(^|[;&|[:space:]])git[[:space:]]+push[[:space:]]+.*(--force|-f)([[:space:]]|$)' <<< "$LOWER_COMMAND"; then
+    if ! allow_sentinel "allow-git-finalize"; then
+      deny "Clearpath source-control gate: git commit/push/tag/rebase/filter-branch/amend/hard-reset requires manual user approval outside Claude Code (create .clearpath/approvals/allow-git-finalize), or explicit user instruction plus the active workflow's permission. 'git add' and read-only git commands are not blocked."
     fi
   fi
 

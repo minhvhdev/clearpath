@@ -45,11 +45,16 @@ Required MCP layer for full workflows:
 - Chrome DevTools MCP for browser QA/runtime evidence.
 - Codebase-Memory MCP for large-repo indexing and knowledge graph retrieval.
 
-Fallback policy:
+Fallback policy (operationally wired into `skills/adopt/SKILL.md`,
+`agents/codebase-architect.md`, and `scripts/clearpath-doctor.sh` as
+of v0.4.3, not just documented here):
 
 - Chrome DevTools missing: UI work may continue, but browser QA cannot be marked passed.
 - Serena missing: small repos may fall back to grep/read; large repo adoption should warn or stop.
 - Codebase-Memory missing: new/small repos may continue; large/legacy/monorepo adoption should stop or run limited mode.
+- `clearpath-doctor.sh` escalates missing `uvx`/`codebase-memory-mcp`
+  from a warning to a hard failure when the target project looks like
+  a large (>= 200 tracked files) adopt-existing-project candidate.
 - jq missing: hard stop because hooks cannot safely parse JSON.
 
 ## 4. Unified Delivery Loop
@@ -116,16 +121,16 @@ inject routing context that tells the model to behave as if
 `/clearpath:go` was invoked. See `docs/AUTOPILOT.md` for the
 routing contract.
 
-Agents: product-strategist, codebase-architect, ux-designer, design-critic, implementation-planner, implementation-engineer, qa-release-engineer, security-reviewer, context-ledger-manager.
+Agents: product-strategist, codebase-architect, ux-designer, design-critic, implementation-planner, implementation-engineer, qa-release-engineer, security-reviewer, context-ledger-manager. `qa-release-engineer` deliberately combines gstack's QA and release roles (see rationale in `agents/qa-release-engineer.md`); the underlying skills (`qa`, `verify-web`, `verify-windows`, `release-candidate`, `release-gate`) remain separate. See `docs/SUBAGENT_DISPATCH.md` for concrete thresholds on when a skill should dispatch these agents as fresh-context subagents rather than working inline.
 
 ## 9. Hook enforcement and approval sentinels
 
 MVP enforcement uses two hook mechanisms:
 
-- Safety Gate: umbrella enforcement for secret edits, dependency installs, destructive shell/data operations, production/infrastructure deploys, and approval sentinel self-edits.
+- Safety Gate: umbrella enforcement for secret edits, dependency installs, destructive shell/data operations, production/infrastructure deploys, source-control finalization (`git commit`/`push`/`tag`/`rebase`/`filter-branch`/`--amend`/`reset --hard`, new in v0.4.3), and approval sentinel self-edits.
 - Design Approval Gate: production UI file edits require manual design approval.
 
-Approval sentinels are files under `.clearpath/approvals/` created manually by the user outside Claude Code. Claude tools are blocked from creating or editing them.
+Approval sentinels are files under `.clearpath/approvals/` created manually by the user outside Claude Code. Claude tools are blocked from creating or editing them — as of v0.4.3 this protection is also fail-closed against path indirection (splitting the sentinel path across a shell variable, `cd`-relative references, `../` traversal), which previously bypassed the gate.
 
 ## 10. Context Ledger artifact architecture
 

@@ -1,0 +1,23 @@
+{
+  "name": "clearpath-marketplace",
+  "description": "Marketplace manifest for the Clearpath Claude Code plugin",
+  "owner": {
+    "name": "<TODO: owner name>",
+    "email": "<TODO: owner email>"
+  },
+  "plugins": [
+    {
+      "name": "clearpath",
+      "source": "./",
+      "description": "Approval-gated Claude Code autopilot product delivery plugin",
+      "version": "0.4.3",
+      "author": {
+        "name": "Clearpath Project"
+      },
+      "homepage": "https://github.com/minhvhdev/clearpath",
+      "repository": "https://github.com/minhvhdev/clearpath",
+      "license": "MIT",
+      "defaultEnabled": true
+    }
+  ]
+}

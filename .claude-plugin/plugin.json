@@ -1,8 +1,8 @@
 {
   "name": "clearpath",
   "displayName": "Clearpath",
-  "version": "0.4.1",
-  "description": "Approval-gated Claude Code product delivery workflow combining GSD-style context engineering, Superpowers-style spec/TDD discipline, gstack-style role review, and Clearpath safety/design/release governance. v0.4.1 is a governance hardening release.",
+  "version": "0.4.3",
+  "description": "Approval-gated Claude Code product delivery workflow combining GSD-style context engineering, Superpowers-style spec/TDD discipline, gstack-style role review, and Clearpath safety/design/release governance. v0.4.3 fixes a critical approval-sentinel bypass and adds real hook enforcement for git finalize actions.",
   "author": {
     "name": "Clearpath Project"
   },

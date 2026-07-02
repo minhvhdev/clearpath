@@ -43,13 +43,26 @@ if [[ ! -d "$PROJECT_DIR" ]]; then
   exit 1
 fi
 
-# has_any <dir> <file...>
+# has_any <dir> <file-or-glob...>
+# Supports literal filenames (checked with -e) and glob patterns
+# containing `*`/`?` (expanded with nullglob so a non-matching glob
+# never falls through as a literal filename check, which previously
+# made "*.sln"/"*.csproj" dead code: `[[ -e "$dir/*.sln" ]]` tests for
+# a file literally named "*.sln", not a glob expansion).
 has_any() {
   local dir="$1"
   shift
   local f
   for f in "$@"; do
-    if [[ -e "$dir/$f" ]]; then
+    if [[ "$f" == *[*?]* ]]; then
+      local -a matches=()
+      shopt -s nullglob
+      matches=("$dir"/$f)
+      shopt -u nullglob
+      if [[ ${#matches[@]} -gt 0 ]]; then
+        return 0
+      fi
+    elif [[ -e "$dir/$f" ]]; then
       return 0
     fi
   done

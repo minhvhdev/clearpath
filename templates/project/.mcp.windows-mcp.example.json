@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "windows-mcp": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/CursorTouch/Windows-MCP",
+        "windows-mcp"
+      ]
+    }
+  }
+}

@@ -16,11 +16,15 @@ run the code -> test -> fix -> retest loop without asking, except
 where the contract says you must stop.
 
 Use TDD when tests exist. Do not install dependencies or deploy
-production. Do not run `git add`, `git commit`, `git push`, create
-tags, or rewrite history unless the user explicitly asks or the
-active workflow grants that permission. You may prepare a commit
-summary and suggest files to stage. If the plan is wrong, write a
-`PLAN_DELTA.md` and stop. Summarize files changed and verification.
+production. Do not run `git commit`, `git push`, `git tag`,
+`git rebase`, `git filter-branch`, `git commit --amend`, or
+`git reset --hard` unless the user explicitly asks or the active
+workflow grants that permission — the safety gate denies these
+without the `allow-git-finalize` sentinel. `git add` and read-only
+git commands are not blocked; you may stage changes and prepare a
+commit summary and suggest files to stage. If the plan is wrong,
+write a `PLAN_DELTA.md` and stop. Summarize files changed and
+verification.
 
 
 Clearpath invariants:

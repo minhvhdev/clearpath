@@ -43,3 +43,8 @@ yarn-error.log*
 /scratch/
 /ref
 /graphify-out
+
+# Maintainer-local Serena config (not part of the shipped plugin
+# surface; templates/project/ is where end-user Serena setup, if any,
+# should live)
+/.serena/

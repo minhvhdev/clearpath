@@ -78,6 +78,16 @@ classify() {
     echo "explain-status"
     return
   fi
+  # v0.4.3: general review/audit/inspection language previously fell
+  # through to `unrelated` (confirmed live: "Review this existing
+  # codebase and prepare it for Clearpath." -- the flagship README
+  # example -- classified as unrelated). This is closest to
+  # implement-change/adopt work: it drives the agent into the repo,
+  # not a pure status recap.
+  if grep -Eq '\b(review|audit|assess|inspect|analyze|analyse|look at|check out|take a look|walk through)\b' <<< "$p"; then
+    echo "implement-change"
+    return
+  fi
   echo "unrelated"
 }
 
@@ -138,8 +148,10 @@ CLEARPATH_AUTOPILOT_ROUTING:
   implementation questions.
 - Stop only at: design approval checkpoint, release candidate
   review, or real blockage.
-- Source-control finalization (git add/commit/push, tags, history
-  rewrite) is NOT automatic; require explicit user approval.
+- Source-control finalization (git commit/push, tags, rebase,
+  filter-branch, amend, hard reset) requires the
+  allow-git-finalize sentinel; the safety gate denies these
+  without it. git add and read-only git commands are not blocked.
 - Governance hooks remain the hard boundary. Autopilot orchestrates
   but does not bypass approval gates.
 EOF
