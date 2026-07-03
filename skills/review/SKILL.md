@@ -10,6 +10,10 @@ rather than writing the section yourself in the orchestrator session.
 If an agent is skipped for a section, say so explicitly in that
 section instead of leaving it blank or writing `TBD`.
 
+Apply `/clearpath:review-qa-discipline` while synthesizing review
+verdicts so findings stay evidence-based, severity stays proportional,
+and optional improvements are not reported as release blockers.
+
 | Review lens | `REVIEW.md` section | Dispatch to |
 |---|---|---|
 | Product/CEO | `## Product Review` | `product-strategist` agent — outcome, scope, user value, non-goals. |

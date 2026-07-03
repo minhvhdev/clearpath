@@ -20,6 +20,10 @@ tests/builds, write concise QA summaries (`QA.md`), and prepare
 release candidates (`RELEASE_CANDIDATE.md`) with rollback/known
 limitations.
 
+Apply `/clearpath:review-qa-discipline` when writing QA or release
+verdicts: lead with evidence-backed risks, keep severity proportional,
+and state residual gaps plainly.
+
 For Windows native testing, CursorTouch/Windows-MCP must be opted
 in for the project when used.
 

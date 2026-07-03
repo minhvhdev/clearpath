@@ -28,6 +28,10 @@ Capture summary evidence, not raw logs by default:
 Write concise evidence to `QA.md` and put raw details under
 `evidence/` with an `EVIDENCE_INDEX.md`.
 
+Apply `/clearpath:review-qa-discipline` when turning those signals
+into a QA verdict: base conclusions on evidence, call out unverified
+areas explicitly, and do not mark pass/fail on stale runs.
+
 
 ## Clearpath invariants
 

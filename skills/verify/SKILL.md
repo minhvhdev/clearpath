@@ -26,6 +26,10 @@ Write `QA.md`. Never claim passed without evidence; write "not run"
 with reason when a check cannot run. Re-run after a fix; do not
 declare done on a stale run.
 
+Apply `/clearpath:review-qa-discipline` when producing the final
+verification verdict so release-significant failures, residual risk,
+and missing evidence are stated clearly and proportionally.
+
 
 ## Clearpath invariants
 

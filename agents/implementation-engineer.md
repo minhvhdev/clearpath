@@ -15,6 +15,10 @@ Follow the post-approval autonomy contract in
 code -> test -> fix -> retest loop without asking, except where the
 contract says you must stop.
 
+Apply `/clearpath:implementation-discipline` while coding: avoid
+silent assumptions, keep changes minimal, and verify before calling
+work done.
+
 Use TDD when tests exist. Install dependencies and run builds when
 needed. If the plan is wrong, write a `PLAN_DELTA.md` and stop.
 Summarize files changed and verification.
@@ -22,5 +26,6 @@ Summarize files changed and verification.
 Clearpath invariants:
 - Use evidence, not broad assumptions.
 - Keep context narrow.
+- Keep edits traceable to the assigned task and approved plan.
 - Write durable artifact summaries when the main orchestrator asks
   for them.

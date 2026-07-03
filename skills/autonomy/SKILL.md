@@ -19,6 +19,10 @@ Use this skill:
 - When a subagent is uncertain whether to keep going or ask.
 - When the user replies "approve" / "go ahead" after a design checkpoint.
 
+Apply `/clearpath:implementation-discipline` during this phase so the
+agent stays inside scope, avoids silent assumptions, and does not call
+work done without verification.
+
 ## Automatic (act without asking)
 
 After approval, the agent may, without asking the user:
@@ -37,6 +41,8 @@ After approval, the agent may, without asking the user:
 - run the project's existing dev / build commands,
 - commit, push, and deploy when the user has asked for it or when it
   is the natural next step to finish the approved work.
+- keep implementation changes minimal and traceable to the approved
+  plan.
 
 ## Must stop and ask the user
 
@@ -53,6 +59,8 @@ when ANY of the following is true:
   (record the failure mode, do not loop forever).
 - The repo state contradicts the plan (file missing, branch missing,
   expected module not present).
+- Progress depends on an unstated assumption that materially changes
+  implementation or verification.
 
 ## Rule of thumb
 

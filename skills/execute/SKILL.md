@@ -15,10 +15,15 @@ This phase follows the post-approval autonomy contract in
 may run the code -> test -> fix -> retest loop without asking the
 user, except where the contract says it must stop.
 
+Apply `/clearpath:implementation-discipline` throughout the
+implementation loop so code changes stay minimal, traceable, and
+verified.
+
 Rules:
 - Stay inside the approved plan.
 - If the plan is wrong, write a `PLAN_DELTA.md` and stop.
 - Use TDD when the repo has test infrastructure.
+- Do not make silent assumptions; state them or stop and ask.
 - Install dependencies, run builds, and deploy when needed to
   complete the approved work.
 - Record task progress in the active change pack.
