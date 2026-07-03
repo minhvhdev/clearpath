@@ -11,6 +11,8 @@ pass(){ printf 'PASS: %s\n' "$*"; }
 warning(){ printf 'WARN: %s\n' "$*"; warn=$((warn+1)); }
 err(){ printf 'FAIL: %s\n' "$*"; fail=$((fail+1)); }
 note_missing(){ printf 'MISSING: %s\n' "$*"; missing_required=$((missing_required+1)); }
+# shellcheck source=clearpath-shell.sh
+source "$(dirname "${BASH_SOURCE[0]}")/clearpath-shell.sh"
 # shellcheck source=clearpath-python.sh
 source "$PLUGIN_ROOT/scripts/clearpath-python.sh"
 
@@ -44,22 +46,25 @@ fi
 
 if [[ -f "$REQ" ]] && command -v jq >/dev/null 2>&1; then
   while IFS= read -r line; do
+    line="$(strip_cr "$line")"
     id="${line%%|*}"
     cmd="${line#*|}"
     if command -v "$cmd" >/dev/null 2>&1; then
       pass "cli $id available ($cmd)"
     else
-      hint="$(jq -r --arg id "$id" '.cli[] | select(.id==$id) | .install_hint' "$REQ")"
+      hint="$(strip_cr "$(jq -r --arg id "$id" '.cli[] | select(.id==$id) | .install_hint' "$REQ")")"
       err "required cli missing: $id ($cmd)"
       note_missing "cli:$id|$hint"
     fi
   done < <(jq -r '.cli[] | select(.required==true) | "\(.id)|\(.command)"' "$REQ")
 
   while IFS= read -r skill; do
+    skill="$(strip_cr "$skill")"
     [[ -z "$skill" ]] && continue
     found=0
-    marker="$(jq -r --arg id "$skill" '.skills[] | select(.id==$id) | .marker_file' "$REQ")"
+    marker="$(strip_cr "$(jq -r --arg id "$skill" '.skills[] | select(.id==$id) | .marker_file' "$REQ")")"
     while IFS= read -r d; do
+      d="$(strip_cr "$d")"
       [[ -z "$d" ]] && continue
       if [[ -f "$(expand_home "$d")/$marker" ]]; then
         found=1
@@ -69,7 +74,7 @@ if [[ -f "$REQ" ]] && command -v jq >/dev/null 2>&1; then
     if [[ "$found" -eq 1 ]]; then
       pass "user-scope skill present: $skill"
     else
-      purpose="$(jq -r --arg id "$skill" '.skills[] | select(.id==$id) | .purpose' "$REQ")"
+      purpose="$(strip_cr "$(jq -r --arg id "$skill" '.skills[] | select(.id==$id) | .purpose' "$REQ")")"
       err "required user-scope skill missing: $skill"
       note_missing "skill:$skill|$purpose"
     fi
@@ -77,9 +82,11 @@ if [[ -f "$REQ" ]] && command -v jq >/dev/null 2>&1; then
 
   mcp_user_ok=1
   while IFS= read -r mcp; do
+    mcp="$(strip_cr "$mcp")"
     [[ -z "$mcp" ]] && continue
     present=0
     while IFS= read -r rel; do
+      rel="$(strip_cr "$rel")"
       [[ -z "$rel" ]] && continue
       path="$(expand_home "$rel")"
       [[ -f "$path" ]] || continue
@@ -90,19 +97,15 @@ if [[ -f "$REQ" ]] && command -v jq >/dev/null 2>&1; then
     done < <(jq -r '.user_mcp_settings_paths[]' "$REQ")
     if [[ "$present" -eq 1 ]]; then
       pass "user-scope MCP configured: $mcp"
+    elif jq -e --arg id "$mcp" '.mcpServers[$id] // empty' "$PLUGIN_ROOT/.mcp.json" >/dev/null 2>&1; then
+      pass "MCP configured via plugin manifest: $mcp"
     else
-      if jq -e --arg id "$mcp" '.mcpServers[$id] // empty' "$PLUGIN_ROOT/.mcp.json" >/dev/null 2>&1; then
-        warning "MCP $mcp in plugin only — not yet in user-scope settings"
-        note_missing "mcp:$mcp|merge from plugin .mcp.json into ~/.claude/settings.json"
-        mcp_user_ok=0
-      else
-        err "required MCP missing from plugin manifest: $mcp"
-        note_missing "mcp:$mcp|missing in plugin .mcp.json"
-        mcp_user_ok=0
-      fi
+      err "required MCP missing from plugin manifest: $mcp"
+      note_missing "mcp:$mcp|missing in plugin .mcp.json"
+      mcp_user_ok=0
     fi
   done < <(jq -r '.mcp_servers[] | select(.required==true) | .id' "$REQ")
-  [[ "$mcp_user_ok" -eq 1 ]] && pass "all required MCP servers present in user scope or plugin+user merge pending"
+  [[ "$mcp_user_ok" -eq 1 ]] && pass "all required MCP servers present (user scope or plugin manifest)"
 fi
 
 clearpath_python_print_diagnostics

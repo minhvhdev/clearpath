@@ -3,8 +3,6 @@
 ## Unreleased
 
 ### Simplified workflow (breaking)
-
-- **Removed** `PreToolUse` safety and design approval hook gates.
 - **Removed** `.clearpath/approvals/` sentinel file model.
 - **Design approval is now in chat**: prototype → present → user
   replies Approve or Request changes → `/clearpath:autonomy` continues.
@@ -32,6 +30,18 @@
 - Added Claude Code marketplace manifest at `.claude-plugin/marketplace.json`.
 - Added GitHub marketplace install instructions in `README.md` and
   `docs/INSTALL.md`.
+
+## 0.4.4 - Doctor Windows + Plugin MCP
+
+### Fixed
+
+- **`clearpath-doctor`** on Windows/Git Bash: strip CRLF from `jq`
+  output so CLI checks (`jq`, `git`, `node`, `npx`, `uvx`) no longer
+  false-fail with trailing `\r`.
+- **MCP checks**: treat servers declared in the plugin `.mcp.json`
+  manifest as satisfied (matches Claude Code plugin MCP wiring); skip
+  unnecessary user-settings merge in **`clearpath-doctor-install`**
+  when plugin already provides the server.
 
 ## 0.4.3 - Approval Sentinel Hardening + Autonomy Gate
 

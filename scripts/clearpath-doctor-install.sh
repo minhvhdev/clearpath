@@ -7,6 +7,9 @@ PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && p
 REQ="$PLUGIN_ROOT/scripts/clearpath-requirements.json"
 HOME_DIR="${HOME:-$(cd ~ && pwd)}"
 
+# shellcheck source=clearpath-shell.sh
+source "$(dirname "${BASH_SOURCE[0]}")/clearpath-shell.sh"
+
 if [[ "${CLEARPATH_DOCTOR_INSTALL_APPROVED:-}" != "1" ]]; then
   echo "CLEARPATH_DOCTOR_INSTALL_BLOCKED: User approval required."
   echo "Ask the user, then rerun with CLEARPATH_DOCTOR_INSTALL_APPROVED=1"
@@ -33,8 +36,9 @@ skill_present() {
   local id="$1"
   local dirs marker dir path
   dirs="$(jq -r --arg id "$id" '.skills[] | select(.id==$id) | .user_scope_dirs[]' "$REQ")"
-  marker="$(jq -r --arg id "$id" '.skills[] | select(.id==$id) | .marker_file' "$REQ")"
+  marker="$(strip_cr "$(jq -r --arg id "$id" '.skills[] | select(.id==$id) | .marker_file' "$REQ")")"
   while IFS= read -r d; do
+    d="$(strip_cr "$d")"
     [[ -z "$d" ]] && continue
     path="$(expand_home "$d")/$marker"
     if [[ -f "$path" ]]; then
@@ -72,7 +76,7 @@ find_skill_source() {
 install_skill_to_user_scope() {
   local id="$1"
   local dest name src
-  name="$(jq -r --arg id "$id" '.skills[] | select(.id==$id) | .label' "$REQ")"
+  name="$(strip_cr "$(jq -r --arg id "$id" '.skills[] | select(.id==$id) | .label' "$REQ")")"
   dest="$(expand_home ".claude/skills/$name")"
   if skill_present "$id"; then
     echo "SKIP: skill $name already in user scope"
@@ -92,6 +96,7 @@ mcp_present_in_user_settings() {
   local id="$1"
   local f expanded
   while IFS= read -r rel; do
+    rel="$(strip_cr "$rel")"
     [[ -z "$rel" ]] && continue
     expanded="$(expand_home "$rel")"
     [[ -f "$expanded" ]] || continue
@@ -100,6 +105,11 @@ mcp_present_in_user_settings() {
     fi
   done < <(jq -r '.user_mcp_settings_paths[]' "$REQ")
   return 1
+}
+
+mcp_present_in_plugin() {
+  local id="$1"
+  jq -e --arg id "$id" '.mcpServers[$id] // .mcp_servers[$id] // empty' "$PLUGIN_ROOT/.mcp.json" >/dev/null 2>&1
 }
 
 merge_mcp_to_user_settings() {
@@ -119,8 +129,8 @@ merge_mcp_to_user_settings() {
 
 install_cli_best_effort() {
   local id="$1" cmd hint
-  cmd="$(jq -r --arg id "$id" '.cli[] | select(.id==$id) | .command' "$REQ")"
-  hint="$(jq -r --arg id "$id" '.cli[] | select(.id==$id) | .install_hint' "$REQ")"
+  cmd="$(strip_cr "$(jq -r --arg id "$id" '.cli[] | select(.id==$id) | .command' "$REQ")")"
+  hint="$(strip_cr "$(jq -r --arg id "$id" '.cli[] | select(.id==$id) | .install_hint' "$REQ")")"
   if command -v "$cmd" >/dev/null 2>&1; then
     echo "SKIP: $cmd already available"
     return 0
@@ -149,17 +159,28 @@ FAIL=0
 echo "CLEARPATH_DOCTOR_INSTALL: starting (user scope)"
 
 while IFS= read -r skill_id; do
+  skill_id="$(strip_cr "$skill_id")"
   [[ -z "$skill_id" ]] && continue
   install_skill_to_user_scope "$skill_id" || FAIL=$((FAIL + 1))
 done < <(jq -r '.skills[] | select(.required==true) | .id' "$REQ")
 
-if ! mcp_present_in_user_settings "chrome-devtools"; then
+mcp_install_needed=0
+while IFS= read -r mcp_id; do
+  mcp_id="$(strip_cr "$mcp_id")"
+  [[ -z "$mcp_id" ]] && continue
+  if mcp_present_in_user_settings "$mcp_id" || mcp_present_in_plugin "$mcp_id"; then
+    echo "SKIP: MCP $mcp_id already configured (user scope or plugin manifest)"
+  else
+    mcp_install_needed=1
+  fi
+done < <(jq -r '.mcp_servers[] | select(.required==true) | .id' "$REQ")
+
+if [[ "$mcp_install_needed" -eq 1 ]]; then
   merge_mcp_to_user_settings || FAIL=$((FAIL + 1))
-else
-  echo "SKIP: user MCP settings already define chrome-devtools"
 fi
 
 while IFS= read -r cli_id; do
+  cli_id="$(strip_cr "$cli_id")"
   [[ -z "$cli_id" ]] && continue
   install_cli_best_effort "$cli_id" || true
 done < <(jq -r '.cli[] | select(.required==true) | .id' "$REQ")
