@@ -27,6 +27,16 @@ expand_home() {
   fi
 }
 
+is_windows_host() {
+  case "${OS:-}" in
+    Windows_NT) return 0 ;;
+  esac
+  case "$(uname -s 2>/dev/null || echo unknown)" in
+    CYGWIN*|MINGW*|MSYS*) return 0 ;;
+  esac
+  return 1
+}
+
 [[ -f "$PLUGIN_ROOT/.claude-plugin/plugin.json" ]] && pass "claude-plugin manifest exists" || err "missing .claude-plugin/plugin.json"
 [[ -f "$PLUGIN_ROOT/.cursor-plugin/plugin.json" ]] && pass "cursor-plugin manifest exists" || warning "missing .cursor-plugin/plugin.json (Cursor support)"
 [[ ! -f "$PLUGIN_ROOT/plugin.json" ]] && pass "no root plugin.json" || err "root plugin.json should not exist"
@@ -107,6 +117,28 @@ if [[ -f "$REQ" ]] && command -v jq >/dev/null 2>&1; then
     fi
   done < <(jq -r '.mcp_servers[] | select(.required==true) | .id' "$REQ")
   [[ "$mcp_user_ok" -eq 1 ]] && pass "all required MCP servers present (user scope or plugin manifest)"
+
+  if is_windows_host && jq -e '.optional_mcp_servers // empty' "$REQ" >/dev/null 2>&1; then
+    while IFS='|' read -r mcp example purpose; do
+      mcp="$(strip_cr "$mcp")"
+      example="$(strip_cr "$example")"
+      purpose="$(strip_cr "$purpose")"
+      [[ -z "$mcp" ]] && continue
+
+      present=0
+      project_mcp="$PROJECT_DIR/.mcp.json"
+      if [[ -f "$project_mcp" ]] && jq -e --arg id "$mcp" '.mcpServers[$id] // empty' "$project_mcp" >/dev/null 2>&1; then
+        present=1
+      fi
+
+      if [[ "$present" -eq 1 ]]; then
+        pass "optional project MCP configured: $mcp"
+      else
+        warning "optional MCP available on Windows: $mcp ($purpose)"
+        printf 'INFO: To opt in, copy %s into your project .mcp.json when testing a Windows native or Electron/WebView2 app.\n' "$example"
+      fi
+    done < <(jq -r '.optional_mcp_servers[] | select(.platform=="windows") | "\(.id)|\(.example_config)|\(.purpose)"' "$REQ")
+  fi
 fi
 
 clearpath_python_print_diagnostics

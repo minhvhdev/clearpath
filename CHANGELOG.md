@@ -2,6 +2,24 @@
 
 ## Unreleased
 
+## 0.4.6 - Windows hook stability + doctor opt-in hints
+
+### Added
+
+- **Doctor Windows hint**: `clearpath-doctor` now warns about the
+  optional `windows-mcp` project opt-in on Windows hosts and points to
+  `templates/project/.mcp.windows-mcp.example.json` without treating
+  it as a required prerequisite.
+
+### Fixed
+
+- **Cursor on Windows hooks**: Cursor hook entrypoints now launch
+  through `hooks/run-hook.cmd` so extensionless hook scripts no longer
+  trigger the Windows "Open with" dialog.
+- **SessionStart hook hang on Windows**: hook-time scripts now read
+  stdin only when data is immediately available, avoiding indefinite
+  waits from non-TTY handles that never reach EOF.
+
 ## 0.4.5 - Cursor support + distilled guardrails
 
 ### Added

@@ -19,15 +19,16 @@
 #   2 - jq missing (fail-closed; autopilot requires jq)
 set -u
 
+# shellcheck source=clearpath-shell.sh
+source "$(dirname "${BASH_SOURCE[0]}")/clearpath-shell.sh"
+
 FORMAT="json"
 if [[ "${1:-}" == "--format" ]]; then
   FORMAT="${2:-json}"
 fi
 
 INPUT=""
-if [[ ! -t 0 ]]; then
-  INPUT="$(cat 2>/dev/null || true)"
-fi
+INPUT="$(read_optional_stdin || true)"
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-${CURSOR_PROJECT_DIR:-$(pwd)}}"
 if [[ -n "$INPUT" ]]; then
   if command -v jq >/dev/null 2>&1; then

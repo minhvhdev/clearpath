@@ -4,10 +4,11 @@
 # Clearpath Autopilot routing context. Read-only. Does not create
 # files and does not block normal prompts.
 set -u
-INPUT=""
-if [[ ! -t 0 ]]; then
-  INPUT="$(cat 2>/dev/null || true)"
-fi
+
+# shellcheck source=clearpath-shell.sh
+source "$(dirname "${BASH_SOURCE[0]}")/clearpath-shell.sh"
+
+INPUT="$(read_optional_stdin || true)"
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-${CURSOR_PROJECT_DIR:-$(pwd)}}"
 SELF_PATH="${BASH_SOURCE[0]:-$0}"
 if [[ -n "$SELF_PATH" ]]; then

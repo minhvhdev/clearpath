@@ -44,6 +44,16 @@
       "purpose": "Large-repo indexing and knowledge graph retrieval."
     }
   ],
+  "optional_mcp_servers": [
+    {
+      "id": "windows-mcp",
+      "required": false,
+      "platform": "windows",
+      "project_opt_in": true,
+      "example_config": "templates/project/.mcp.windows-mcp.example.json",
+      "purpose": "Windows native or Electron/WebView2 UI verification with user-like desktop interaction."
+    }
+  ],
   "cli": [
     {
       "id": "jq",

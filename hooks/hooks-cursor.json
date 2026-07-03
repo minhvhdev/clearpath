@@ -3,12 +3,12 @@
   "hooks": {
     "sessionStart": [
       {
-        "command": "./hooks/cursor-session-start"
+        "command": "./hooks/run-hook.cmd cursor-session-start"
       }
     ],
     "stop": [
       {
-        "command": "./hooks/cursor-stop"
+        "command": "./hooks/run-hook.cmd cursor-stop"
       }
     ]
   }

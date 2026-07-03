@@ -20,6 +20,14 @@ are the full skills in the user's skill scope (`~/.claude/skills/`).
 - `serena` — symbol navigation
 - `codebase-memory-mcp` — large-repo knowledge graph
 
+## Optional MCP on Windows
+
+- `windows-mcp` — project opt-in for Windows native / Electron /
+  WebView2 verification.
+
+Doctor should warn about this on Windows hosts, but it must not count
+as a missing required prerequisite and must not trigger auto-install.
+
 ## Workflow
 
 1. Run `clearpath-doctor` (or `scripts/clearpath-doctor.sh`).
