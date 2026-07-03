@@ -27,7 +27,11 @@ both when validating important web flows.
    WebView2 see `/clearpath:verify-windows`.
 2. Open/inspect the app with Chrome DevTools MCP when available.
 3. Identify the user flow, state, selectors/locators, and any
-   console/network issues. Take screenshots when they help.
+   console/network issues. Take screenshots when they help — **always**
+   pass `filePath` on `take_screenshot` (see `BOOT.md` — Screenshot
+   evidence). Save under
+   `.clearpath/docs/changes/<change-id>/evidence/<name>.png` and link
+   paths in `QA.md`.
 4. Write or update Playwright tests under the project convention.
    Default to `tests/e2e/`. Use the existing repo convention if
    one is present.

@@ -48,6 +48,33 @@ written to `.clearpath/docs/AUTOPILOT.md`. See `/clearpath:go` and
 All UI prototypes live under `.clearpath/prototype/`. Use **HTML**
 and **Tailwind CSS** only (Tailwind CDN in `index.html`).
 
+## Screenshot evidence (Chrome DevTools MCP)
+
+When capturing browser screenshots, **always** pass `filePath` on
+`take_screenshot`. Do not rely on the MCP default — without
+`filePath`, large images land in the OS temp folder
+(`%TEMP%/chrome-devtools-mcp-*` on Windows).
+
+**Primary location** (active change pack):
+
+`.clearpath/docs/changes/<change-id>/evidence/<name>.png`
+
+**Fallback** (no change pack yet):
+
+`.clearpath/prototype/screenshots/<name>.png`
+
+Workflow:
+
+1. `navigate` to the prototype or app URL.
+2. `take_screenshot` with `filePath` set to a workspace path above.
+   Use `fullPage: true` for design review; viewport-only for a
+   specific state.
+3. Link the saved path in `UI_CONTRACT.md`, `DESIGN_REVIEW.md`,
+   `QA.md`, or `evidence/EVIDENCE_INDEX.md`.
+
+Create the `evidence/` directory before the first screenshot. Use
+descriptive names (`prototype-home.png`, `error-state.png`).
+
 ## Required user-scope skills
 
 Design work requires these skills in `~/.claude/skills/`:

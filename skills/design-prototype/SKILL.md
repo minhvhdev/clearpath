@@ -37,6 +37,33 @@ The `design-critic` agent aggregates outputs and issues a final verdict.
 - Preview: open `.clearpath/prototype/index.html` in a browser or
   Chrome DevTools MCP.
 
+## Screenshot capture (mandatory when presenting)
+
+After the prototype is built, capture at least one visual with Chrome
+DevTools MCP for design review. **Always** pass `filePath` on
+`take_screenshot` so the image is saved in the workspace (see
+`BOOT.md` — Screenshot evidence). Never leave screenshots in the
+OS temp folder.
+
+Example (replace `<change-id>` and screen name):
+
+1. Navigate to the prototype (`file://` path or local preview URL).
+2. Call `take_screenshot`:
+
+```json
+{
+  "filePath": ".clearpath/docs/changes/<change-id>/evidence/prototype-home.png",
+  "fullPage": true,
+  "format": "png"
+}
+```
+
+3. Link the path in `UI_CONTRACT.md` and mention it when presenting
+   the prototype in chat.
+
+If no change pack exists yet, use
+`.clearpath/prototype/screenshots/<name>.png` instead.
+
 ## Required order
 
 1. Read **`design-taste-frontend`** skill; output a one-line Design Read
@@ -48,13 +75,14 @@ The `design-critic` agent aggregates outputs and issues a final verdict.
    `IMPECCABLE_REVIEW.md` (or impeccable's native output location).
 4. Write `UI_CONTRACT.md` in `.clearpath/docs/changes/<change-id>/`.
 5. Run **`design-critic`** → `DESIGN_REVIEW.md` with final verdict.
-6. **Present the prototype.** Ask:
+6. Capture prototype screenshot(s) per **Screenshot capture** above.
+7. **Present the prototype.** Ask:
 
    > **Approve** — implement in production code.
    > **Request changes** — describe revisions.
 
-7. Wait for user approval in chat before production UI edits.
-8. On approval: `DESIGN_APPROVAL.md` → `/clearpath:autonomy`.
+8. Wait for user approval in chat before production UI edits.
+9. On approval: `DESIGN_APPROVAL.md` → `/clearpath:autonomy`.
 
 ## Required MCP (mandatory)
 

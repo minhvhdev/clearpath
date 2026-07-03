@@ -32,6 +32,11 @@ Apply `/clearpath:review-qa-discipline` when turning those signals
 into a QA verdict: base conclusions on evidence, call out unverified
 areas explicitly, and do not mark pass/fail on stale runs.
 
+When using Chrome DevTools MCP `take_screenshot`, **always** pass
+`filePath` pointing into the active change pack's `evidence/`
+folder (see `BOOT.md` — Screenshot evidence). Do not rely on the
+MCP temp-folder default.
+
 
 ## Clearpath invariants
 
