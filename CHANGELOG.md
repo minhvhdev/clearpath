@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+## 0.4.5 - Cursor support + distilled guardrails
+
+### Added
+
+- **Cursor support**: added `.cursor-plugin/plugin.json`, Cursor hook
+  wrappers, and install docs for running Clearpath as a local Cursor
+  plugin.
+- **Distilled guardrails**: added
+  `/clearpath:implementation-discipline` and
+  `/clearpath:review-qa-discipline` to keep execution scoped and
+  verdicts evidence-based without duplicating broader generic guidance.
+- **Screenshot evidence workflow**: documented workspace-backed
+  screenshot capture for prototype review and QA evidence.
+
 ### Simplified workflow (breaking)
 - **Removed** `.clearpath/approvals/` sentinel file model.
 - **Design approval is now in chat**: prototype → present → user
