@@ -1,0 +1,25 @@
+{
+  "name": "clearpath",
+  "displayName": "Clearpath",
+  "description": "Approval-gated product delivery workflow combining context engineering, spec/TDD discipline, role review, and safety/design/release governance.",
+  "version": "0.4.4",
+  "author": {
+    "name": "Clearpath Project"
+  },
+  "homepage": "https://github.com/minhvhdev/clearpath",
+  "repository": "https://github.com/minhvhdev/clearpath",
+  "license": "MIT",
+  "keywords": [
+    "cursor",
+    "product-delivery",
+    "approval-gates",
+    "context-engineering",
+    "mcp",
+    "workflow"
+  ],
+  "skills": "./skills/",
+  "agents": "./agents/",
+  "hooks": "./hooks/hooks-cursor.json",
+  "mcpServers": "./.mcp.json",
+  "defaultEnabled": true
+}

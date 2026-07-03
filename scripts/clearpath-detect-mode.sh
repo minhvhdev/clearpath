@@ -28,7 +28,7 @@ INPUT=""
 if [[ ! -t 0 ]]; then
   INPUT="$(cat 2>/dev/null || true)"
 fi
-PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
+PROJECT_DIR="${CLAUDE_PROJECT_DIR:-${CURSOR_PROJECT_DIR:-$(pwd)}}"
 if [[ -n "$INPUT" ]]; then
   if command -v jq >/dev/null 2>&1; then
     pd="$(jq -r '.project_dir // empty' <<< "$INPUT" 2>/dev/null || true)"

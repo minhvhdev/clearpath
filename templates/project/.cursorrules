@@ -1,0 +1,34 @@
+# Project Instructions for Clearpath
+
+Clearpath is active for this project.
+
+At session start:
+1. Read `.clearpath/docs/BOOT.md`.
+2. Read `.clearpath/docs/CURRENT_CONTEXT.md`.
+3. Use `.clearpath/docs/ARTIFACT_INDEX.json` and the active `CHANGE_INDEX.md` before reading any detailed artifact.
+
+Do not import Clearpath artifacts with `@` syntax. Artifacts are durable memory, not automatic context.
+
+Do not read all of `.clearpath/docs/**` or `.clearpath/docs/changes/**`. Use progressive retrieval.
+
+## Simple workflow
+
+For UI work:
+1. Build an **HTML + Tailwind CSS** prototype under `.clearpath/prototype/`
+   (use the Tailwind CDN; open `index.html` in a browser to preview).
+2. Ask the user to **Approve** or **Request changes** in chat.
+3. After approval, implement, test, fix, and verify autonomously via `/clearpath:autonomy`.
+
+All Clearpath artifacts (spec, plan, reviews, QA, etc.) live under
+`.clearpath/docs/` and `.clearpath/docs/changes/<id>/`.
+
+Do not implement production UI before the user approves the design in chat.
+
+For web verification, use `/clearpath:verify-web` (Playwright for regression/E2E, Chrome DevTools MCP for live inspect/debug). For Windows native verification, use `/clearpath:verify-windows` (CursorTouch/Windows-MCP, opt-in).
+
+Clearpath Autopilot is the default UX. `/clearpath:go` is the
+default entrypoint. The SessionStart and UserPromptSubmit hooks
+inject routing context; the model should behave as if `/clearpath:go`
+was invoked when the user makes a normal product/development request.
+Read `.clearpath/docs/AUTOPILOT.md` if it exists for the current
+detected mode, route, and next expected action.

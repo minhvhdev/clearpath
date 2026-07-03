@@ -84,6 +84,7 @@
   ],
   "user_mcp_settings_paths": [
     ".claude/settings.json",
-    ".claude.json"
+    ".claude.json",
+    ".cursor/mcp.json"
   ]
 }

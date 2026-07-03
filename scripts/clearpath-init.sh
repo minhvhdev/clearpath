@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
-PROJECT_DIR="${1:-${CLAUDE_PROJECT_DIR:-$(pwd)}}"
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+PROJECT_DIR="${1:-${CLAUDE_PROJECT_DIR:-${CURSOR_PROJECT_DIR:-$(pwd)}}}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${CURSOR_PLUGIN_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}}"
 DOCS="$PROJECT_DIR/.clearpath/docs"
 CHANGES="$DOCS/changes"
 PROTO="$PROJECT_DIR/.clearpath/prototype"
@@ -34,6 +34,12 @@ if [[ ! -f "$PROJECT_DIR/CLAUDE.md" ]]; then
   echo "created $PROJECT_DIR/CLAUDE.md"
 else
   echo "exists  $PROJECT_DIR/CLAUDE.md"
+fi
+if [[ ! -f "$PROJECT_DIR/.cursorrules" ]]; then
+  cp "$PLUGIN_ROOT/templates/project/.cursorrules" "$PROJECT_DIR/.cursorrules"
+  echo "created $PROJECT_DIR/.cursorrules"
+else
+  echo "exists  $PROJECT_DIR/.cursorrules"
 fi
 # shellcheck source=clearpath-python.sh
 source "$PLUGIN_ROOT/scripts/clearpath-python.sh"

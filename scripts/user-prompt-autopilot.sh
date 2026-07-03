@@ -8,14 +8,14 @@ INPUT=""
 if [[ ! -t 0 ]]; then
   INPUT="$(cat 2>/dev/null || true)"
 fi
-PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
+PROJECT_DIR="${CLAUDE_PROJECT_DIR:-${CURSOR_PROJECT_DIR:-$(pwd)}}"
 SELF_PATH="${BASH_SOURCE[0]:-$0}"
 if [[ -n "$SELF_PATH" ]]; then
   SCRIPT_DIR="$(cd "$(dirname "$SELF_PATH")" 2>/dev/null && pwd || echo "")"
 else
   SCRIPT_DIR=""
 fi
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "${SCRIPT_DIR}/.." 2>/dev/null && pwd || echo "$PROJECT_DIR")}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${CURSOR_PLUGIN_ROOT:-$(cd "${SCRIPT_DIR}/.." 2>/dev/null && pwd || echo "$PROJECT_DIR")}}"
 
 PROMPT=""
 if [[ -n "$INPUT" ]] && command -v jq >/dev/null 2>&1; then

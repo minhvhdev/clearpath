@@ -2,7 +2,7 @@
   "name": "clearpath",
   "displayName": "Clearpath",
   "version": "0.4.4",
-  "description": "Approval-gated Claude Code product delivery workflow combining GSD-style context engineering, Superpowers-style spec/TDD discipline, gstack-style role review, and Clearpath safety/design/release governance. v0.4.4 fixes Clearpath doctor false failures on Windows (CRLF jq output) and accepts plugin-manifest MCP as satisfied.",
+  "description": "Approval-gated product delivery workflow for Claude Code and Cursor. Combines GSD-style context engineering, Superpowers-style spec/TDD discipline, gstack-style role review, and Clearpath safety/design/release governance.",
   "author": {
     "name": "Clearpath Project"
   },

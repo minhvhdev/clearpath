@@ -1,6 +1,10 @@
 # Install Clearpath
 
-## Install from GitHub marketplace
+Clearpath works on both **Claude Code** and **Cursor**.
+
+## Claude Code
+
+### Install from GitHub marketplace
 
 Add the marketplace:
 
@@ -26,7 +30,7 @@ Start:
 /clearpath:go
 ```
 
-## Local development install
+### Local development install
 
 ```bash
 claude --plugin-dir ./clearpath-plugin
@@ -39,12 +43,30 @@ Then use:
 /clearpath:init
 ```
 
-## Updating the marketplace/plugin
+### Updating the marketplace/plugin
 
 ```text
 /plugin marketplace update clearpath-marketplace
 /reload-plugins
 ```
+
+## Cursor
+
+### Install from marketplace
+
+In Cursor Settings > Plugins, add the marketplace `minhvhdev/clearpath`
+and install Clearpath. Restart Cursor after installation.
+
+### Local development install
+
+Clone this repo and add it as a local plugin in Cursor Settings > Plugins.
+Restart Cursor after adding the plugin.
+
+### Usage in Cursor
+
+All Clearpath skills and agents are available the same way as in
+Claude Code. The Autopilot hooks inject context on session start.
+Use the same namespaced skills (`/clearpath:go`, `/clearpath:doctor`, etc.).
 
 ## Project initialization
 

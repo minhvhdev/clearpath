@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -u
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
-PROJECT_DIR="${1:-${CLAUDE_PROJECT_DIR:-$(pwd)}}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${CURSOR_PLUGIN_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}}"
+PROJECT_DIR="${1:-${CLAUDE_PROJECT_DIR:-${CURSOR_PROJECT_DIR:-$(pwd)}}}"
 REQ="$PLUGIN_ROOT/scripts/clearpath-requirements.json"
 HOME_DIR="${HOME:-$(cd ~ && pwd)}"
 fail=0
@@ -27,7 +27,8 @@ expand_home() {
   fi
 }
 
-[[ -f "$PLUGIN_ROOT/.claude-plugin/plugin.json" ]] && pass "manifest exists" || err "missing .claude-plugin/plugin.json"
+[[ -f "$PLUGIN_ROOT/.claude-plugin/plugin.json" ]] && pass "claude-plugin manifest exists" || err "missing .claude-plugin/plugin.json"
+[[ -f "$PLUGIN_ROOT/.cursor-plugin/plugin.json" ]] && pass "cursor-plugin manifest exists" || warning "missing .cursor-plugin/plugin.json (Cursor support)"
 [[ ! -f "$PLUGIN_ROOT/plugin.json" ]] && pass "no root plugin.json" || err "root plugin.json should not exist"
 [[ -f "$PLUGIN_ROOT/hooks/hooks.json" ]] && pass "hooks/hooks.json exists" || err "missing hooks/hooks.json"
 [[ -f "$PLUGIN_ROOT/.mcp.json" ]] && pass ".mcp.json exists" || err "missing .mcp.json"

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PLUGIN_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+export CURSOR_PLUGIN_ROOT="${CURSOR_PLUGIN_ROOT:-$PLUGIN_ROOT}"
+export CLAUDE_PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$PLUGIN_ROOT}"
+
+if [[ -x "$PLUGIN_ROOT/scripts/stop-ensure-state.sh" ]]; then
+  "$PLUGIN_ROOT/scripts/stop-ensure-state.sh" 2>/dev/null || true
+fi
+
+printf '{}\n'
+exit 0

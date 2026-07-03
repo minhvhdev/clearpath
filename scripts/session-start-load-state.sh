@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -u
-PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
+PROJECT_DIR="${CLAUDE_PROJECT_DIR:-${CURSOR_PROJECT_DIR:-$(pwd)}}"
 BOOT="$PROJECT_DIR/.clearpath/docs/BOOT.md"
 CURRENT="$PROJECT_DIR/.clearpath/docs/CURRENT_CONTEXT.md"
 INDEX="$PROJECT_DIR/.clearpath/docs/ARTIFACT_INDEX.json"

@@ -1,7 +1,7 @@
 # Clearpath
 
-Clearpath is a Claude Code product delivery plugin with a simple
-workflow: **prototype → approve in chat → agent builds autonomously**.
+Clearpath is a product delivery plugin for **Claude Code** and **Cursor**
+with a simple workflow: **prototype → approve in chat → agent builds autonomously**.
 
 It combines:
 
@@ -10,7 +10,9 @@ It combines:
 - **gstack-style role review**: product/CEO, design, engineering, QA, security, release.
 - **Context Ledger**: artifact memory without reading everything at startup.
 
-## Install from GitHub marketplace
+## Install on Claude Code
+
+### From GitHub marketplace
 
 Add the marketplace:
 
@@ -38,7 +40,7 @@ Start:
 
 Or just describe what you want to build or change.
 
-## Local development install
+### Local development install
 
 From the parent directory of this plugin:
 
@@ -46,7 +48,30 @@ From the parent directory of this plugin:
 claude --plugin-dir ./clearpath-plugin
 ```
 
-Inside Claude Code, you can just say what you want. The
+## Install on Cursor
+
+### From marketplace
+
+In Cursor Settings > Plugins, add the marketplace `minhvhdev/clearpath`
+and install Clearpath. Restart Cursor after installation.
+
+### Local development install
+
+1. Clone this repo:
+   ```bash
+   git clone https://github.com/minhvhdev/clearpath.git
+   ```
+2. In Cursor, open Settings > Plugins and add the cloned directory
+   as a local plugin.
+3. Restart Cursor.
+
+After installation, the Clearpath skills, agents, hooks, and MCP
+servers are available. Use the same workflow and skills as on
+Claude Code.
+
+## Usage
+
+Inside Claude Code or Cursor, you can just say what you want. The
 Autopilot detects the project mode and routes the request. You can
 also use namespaced skills such as:
 
@@ -102,11 +127,14 @@ workflow skills. See [docs/AUTOPILOT.md](docs/AUTOPILOT.md).
 
 ```text
 clearpath-plugin/
-├── .claude-plugin/plugin.json
+├── .claude-plugin/plugin.json    # Claude Code manifest
+├── .cursor-plugin/plugin.json    # Cursor manifest
 ├── .mcp.json
 ├── skills/
 ├── agents/
-├── hooks/hooks.json
+├── hooks/
+│   ├── hooks.json                # Claude Code hooks
+│   └── hooks-cursor.json         # Cursor hooks
 ├── scripts/
 ├── bin/
 ├── tests/
@@ -118,8 +146,8 @@ clearpath-plugin/
 
 Hard requirements:
 
-- Claude Code
-- Bash-compatible shell
+- Claude Code **or** Cursor (Agent mode)
+- Bash-compatible shell (Git Bash on Windows)
 - `jq`
 - Git recommended for real projects
 

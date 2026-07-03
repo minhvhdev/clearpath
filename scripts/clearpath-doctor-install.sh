@@ -3,7 +3,7 @@
 # Requires explicit user approval via CLEARPATH_DOCTOR_INSTALL_APPROVED=1
 set -euo pipefail
 
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${CURSOR_PLUGIN_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}}"
 REQ="$PLUGIN_ROOT/scripts/clearpath-requirements.json"
 HOME_DIR="${HOME:-$(cd ~ && pwd)}"
 

@@ -3,12 +3,13 @@
 # SessionStart hook. Injects Clearpath Autopilot routing context for
 # the current project. Read-only. Does not create or modify files.
 set -u
-PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
+PROJECT_DIR="${CLAUDE_PROJECT_DIR:-${CURSOR_PROJECT_DIR:-$(pwd)}}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || echo "")"
 DETECT=""
 for cand in \
   "$PROJECT_DIR/scripts/clearpath-detect-mode.sh" \
   "${CLAUDE_PLUGIN_ROOT:+$CLAUDE_PLUGIN_ROOT/scripts/clearpath-detect-mode.sh}" \
+  "${CURSOR_PLUGIN_ROOT:+$CURSOR_PLUGIN_ROOT/scripts/clearpath-detect-mode.sh}" \
   "$SCRIPT_DIR/clearpath-detect-mode.sh"; do
   if [[ -n "$cand" && -x "$cand" ]]; then
     DETECT="$cand"
