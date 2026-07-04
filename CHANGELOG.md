@@ -2,6 +2,25 @@
 
 ## Unreleased
 
+## 0.4.8 - Goal mode + Cursor repo backfill
+
+### Added
+
+- **Goal mode skill**: added `/clearpath:goal` as an explicit opt-in
+  fast path that skips the normal design approval checkpoint and keeps
+  executing autonomously until the goal is complete or a real blocker is
+  reached.
+
+### Fixed
+
+- **Cursor repo backfill**: `clearpath-init` now copies the new
+  `.cursor/rules/clearpath.mdc` and
+  `.cursor/rules/clearpath-autopilot.mdc` files into project roots, so
+  re-running init upgrades existing Cursor-initialized repos.
+- **Git Bash compatibility**: normalized `clearpath-init.sh` and
+  `clearpath-python.sh` so the backfill/init path works correctly from
+  Bash on Windows.
+
 ## 0.4.7 - Cursor fallback + Claude hook fix
 
 ### Fixed

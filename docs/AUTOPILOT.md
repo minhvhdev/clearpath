@@ -11,6 +11,8 @@ commands required.
 - On `UserPromptSubmit`, classifies intent (including `approve` and
   `request changes`) and injects routing context.
 - `/clearpath:go` is the manual entrypoint with the same behavior.
+- `/clearpath:goal` is the explicit override when the user wants
+  end-to-end execution without the normal design approval checkpoint.
 
 In Cursor, ship the same core guidance as an always-applied project
 rule as well, including the prompt-routing behavior normally handled by

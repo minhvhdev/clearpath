@@ -19,6 +19,7 @@ copy_if_missing() {
 }
 
 TEMPLATE_DOCS="$PLUGIN_ROOT/templates/project/.clearpath/docs"
+TEMPLATE_CURSOR_RULES="$PLUGIN_ROOT/templates/project/.cursor/rules"
 copy_if_missing "$TEMPLATE_DOCS/BOOT.md" "$DOCS/BOOT.md"
 copy_if_missing "$TEMPLATE_DOCS/CURRENT_CONTEXT.md" "$DOCS/CURRENT_CONTEXT.md"
 copy_if_missing "$TEMPLATE_DOCS/STATE.md" "$DOCS/STATE.md"
@@ -41,6 +42,8 @@ if [[ ! -f "$PROJECT_DIR/.cursorrules" ]]; then
 else
   echo "exists  $PROJECT_DIR/.cursorrules"
 fi
+copy_if_missing "$TEMPLATE_CURSOR_RULES/clearpath.mdc" "$PROJECT_DIR/.cursor/rules/clearpath.mdc"
+copy_if_missing "$TEMPLATE_CURSOR_RULES/clearpath-autopilot.mdc" "$PROJECT_DIR/.cursor/rules/clearpath-autopilot.mdc"
 # shellcheck source=clearpath-python.sh
 source "$PLUGIN_ROOT/scripts/clearpath-python.sh"
 if clearpath_find_python; then

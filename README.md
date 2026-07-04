@@ -77,6 +77,7 @@ also use namespaced skills such as:
 
 ```text
 /clearpath:go             (default autopilot entrypoint)
+/clearpath:goal           (explicit one-shot goal mode; skips approval gate)
 /clearpath:init
 /clearpath:start
 /clearpath:update
@@ -119,6 +120,9 @@ For UI work, the agent will:
 2. Ask you to **Approve** or **Request changes**.
 3. After you reply "approve" (or similar), continue building without
    routine questions.
+
+If you want Clearpath to skip that checkpoint for a single run, invoke
+`/clearpath:goal`.
 
 `.clearpath/docs/AUTOPILOT.md` is a continuity artifact created by
 workflow skills. See [docs/AUTOPILOT.md](docs/AUTOPILOT.md).

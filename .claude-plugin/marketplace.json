@@ -10,7 +10,7 @@
       "name": "clearpath",
       "source": "./",
       "description": "Approval-gated Claude Code autopilot product delivery plugin",
-      "version": "0.4.7",
+      "version": "0.4.8",
       "author": {
         "name": "Clearpath Project"
       },

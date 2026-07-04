@@ -73,6 +73,11 @@ still add context when they fire, but the always-applied rules are the
 primary always-on layer. Use the same namespaced skills
 (`/clearpath:go`, `/clearpath:doctor`, etc.).
 
+If a repo was initialized before these Cursor fallback rules were
+added, re-run `clearpath-init` from that repo root. The init command is
+safe to re-run and will backfill missing `.cursor/rules/*` files
+without overwriting existing project artifacts.
+
 ## Project initialization
 
 From the project root:
