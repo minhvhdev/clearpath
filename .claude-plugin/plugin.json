@@ -1,7 +1,7 @@
 {
   "name": "clearpath",
   "displayName": "Clearpath",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "description": "Approval-gated product delivery workflow for Claude Code and Cursor. Combines GSD-style context engineering, Superpowers-style spec/TDD discipline, gstack-style role review, and Clearpath safety/design/release governance.",
   "author": {
     "name": "Clearpath Project"
@@ -15,7 +15,6 @@
     "mcp",
     "workflow"
   ],
-  "hooks": "./hooks/hooks.json",
   "mcpServers": "./.mcp.json",
   "defaultEnabled": true
 }

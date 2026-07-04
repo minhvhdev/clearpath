@@ -5,6 +5,10 @@
       "args": [
         "-y",
         "chrome-devtools-mcp@latest",
+        "--screenshot-format=jpeg",
+        "--screenshot-quality=70",
+        "--screenshot-max-width=1600",
+        "--screenshot-max-height=3000",
         "--slim",
         "--headless",
         "--isolated",

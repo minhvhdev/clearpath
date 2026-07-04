@@ -129,6 +129,8 @@ workflow skills. See [docs/AUTOPILOT.md](docs/AUTOPILOT.md).
 clearpath-plugin/
 ├── .claude-plugin/plugin.json    # Claude Code manifest
 ├── .cursor-plugin/plugin.json    # Cursor manifest
+├── .cursor/rules/clearpath.mdc   # Cursor always-on Clearpath context
+├── .cursor/rules/clearpath-autopilot.mdc # Cursor always-on routing
 ├── .mcp.json
 ├── skills/
 ├── agents/
@@ -154,6 +156,9 @@ Hard requirements:
 MCP layer expected by Clearpath workflows:
 
 - Chrome DevTools MCP via `npx -y chrome-devtools-mcp@latest`
+  with screenshot guardrails in `.mcp.json` (`jpeg`, quality 70,
+  max `1600x3000`) to keep image payloads under tighter provider
+  request limits
 - Serena via `uvx --from git+https://github.com/oraios/serena ... --context=claude-code --project-from-cwd`
 - Codebase-Memory MCP via `codebase-memory-mcp` on PATH
 
@@ -170,6 +175,11 @@ Run `/clearpath:doctor` to verify:
 - User-scope skills: `design-taste-frontend`, `impeccable`
 - MCP servers: chrome-devtools, serena, codebase-memory-mcp
 - CLI: jq, git, node, npx, uvx, codebase-memory-mcp
+
+For Cursor, keep `.cursor/rules/clearpath.mdc` and
+`.cursor/rules/clearpath-autopilot.mdc` in the project so Clearpath
+instructions and routing stay active even if hook-delivered Autopilot
+context is dropped by the IDE.
 
 If anything is missing, the agent will ask for permission, then run:
 

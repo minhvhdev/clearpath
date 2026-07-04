@@ -55,6 +55,11 @@ When capturing browser screenshots, **always** pass `filePath` on
 `filePath`, large images land in the OS temp folder
 (`%TEMP%/chrome-devtools-mcp-*` on Windows).
 
+The shipped `.mcp.json` can also cap screenshot payloads at the source
+with `--screenshot-format`, `--screenshot-quality`,
+`--screenshot-max-width`, and `--screenshot-max-height`. Treat those as
+guardrails, not a replacement for `filePath`.
+
 **Primary location** (active change pack):
 
 `.clearpath/docs/changes/<change-id>/evidence/<name>.png`

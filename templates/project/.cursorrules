@@ -27,8 +27,10 @@ Do not implement production UI before the user approves the design in chat.
 For web verification, use `/clearpath:verify-web` (Playwright for regression/E2E, Chrome DevTools MCP for live inspect/debug). For Windows native verification, use `/clearpath:verify-windows` (CursorTouch/Windows-MCP, opt-in).
 
 Clearpath Autopilot is the default UX. `/clearpath:go` is the
-default entrypoint. The SessionStart and UserPromptSubmit hooks
-inject routing context; the model should behave as if `/clearpath:go`
-was invoked when the user makes a normal product/development request.
-Read `.clearpath/docs/AUTOPILOT.md` if it exists for the current
-detected mode, route, and next expected action.
+default entrypoint. In Cursor, keep the always-applied project rule as
+the persistent fallback and treat hook-delivered routing context as
+best-effort. The model should behave as if `/clearpath:go` was invoked
+when the user makes a normal product/development request, including the
+prompt-routing behavior normally carried by `UserPromptSubmit`. Read
+`.clearpath/docs/AUTOPILOT.md` if it exists for the current detected
+mode, route, and next expected action.

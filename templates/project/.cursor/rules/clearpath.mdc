@@ -1,0 +1,31 @@
+---
+description: Clearpath fallback workflow for Cursor sessions
+alwaysApply: true
+---
+
+# Clearpath
+
+Clearpath is active for this project. This rule is the persistent
+Cursor fallback when hook-delivered Autopilot context is unavailable.
+
+At session start:
+1. Read `.clearpath/docs/BOOT.md`.
+2. Read `.clearpath/docs/CURRENT_CONTEXT.md`.
+3. Use `.clearpath/docs/ARTIFACT_INDEX.json` and the active
+   `CHANGE_INDEX.md` before reading detailed artifacts.
+
+Do not import Clearpath artifacts with `@` syntax. Use progressive
+retrieval instead of reading all of `.clearpath/docs/**`.
+
+Treat normal product and development requests as if `/clearpath:go` was
+invoked.
+
+For UI work:
+1. Build an HTML + Tailwind prototype under `.clearpath/prototype/`.
+2. Present it and ask the user to **Approve** or **Request changes** in
+   chat.
+3. After approval, continue via `/clearpath:autonomy` without routine
+   questions.
+
+Use `/clearpath:verify-web` for web UI and `/clearpath:verify-windows`
+for Windows native UI.

@@ -12,6 +12,11 @@ commands required.
   `request changes`) and injects routing context.
 - `/clearpath:go` is the manual entrypoint with the same behavior.
 
+In Cursor, ship the same core guidance as an always-applied project
+rule as well, including the prompt-routing behavior normally handled by
+`UserPromptSubmit`. Hook-delivered context in the IDE is best-effort,
+so the rules are the reliable fallback.
+
 ## Simple workflow
 
 ```text

@@ -2,7 +2,7 @@
   "name": "clearpath",
   "displayName": "Clearpath",
   "description": "Approval-gated product delivery workflow combining context engineering, spec/TDD discipline, role review, and safety/design/release governance.",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "author": {
     "name": "Clearpath Project"
   },

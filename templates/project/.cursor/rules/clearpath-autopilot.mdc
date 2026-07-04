@@ -1,0 +1,35 @@
+---
+description: Clearpath autopilot routing for Cursor sessions
+alwaysApply: true
+---
+
+# Clearpath Autopilot
+
+In Cursor, emulate Claude Code Autopilot through always-applied rules
+when hook-delivered context is unavailable.
+
+Treat plain-language product and development requests as if
+`/clearpath:go` was invoked. Do not require the user to choose
+`/clearpath:init`, `/clearpath:update`, or `/clearpath:adopt` manually.
+
+Routing:
+- Build, add, change, refactor, review, or fix requests: continue as
+  active Clearpath work and open or continue a change pack.
+- UI, design, prototype, mockup, or UX requests: run
+  `/clearpath:design-prototype`, present the result, and ask the user to
+  **Approve** or **Request changes** in chat.
+- If the user says `approve`, `approved`, `LGTM`, `looks good`,
+  `ship it`, `go ahead`, or similar after a design review: continue
+  immediately via `/clearpath:autonomy` without routine questions.
+- If the user asks for revision after a design review: revise the
+  prototype and re-present it.
+- Verify, test, or QA requests: route to `/clearpath:verify`,
+  `/clearpath:verify-web`, or `/clearpath:verify-windows`.
+- Release or deploy requests: prepare the release candidate and proceed
+  only with confirmation.
+- Status or summary requests: read `CURRENT_CONTEXT.md` and the active
+  change index, then summarize.
+
+Clarify only when the goal is ambiguous, credentials are missing, or
+the request exceeds current scope. Stop only at the design checkpoint,
+release candidate review, or a real blocker.

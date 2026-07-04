@@ -65,8 +65,13 @@ Restart Cursor after adding the plugin.
 ### Usage in Cursor
 
 All Clearpath skills and agents are available the same way as in
-Claude Code. The Autopilot hooks inject context on session start.
-Use the same namespaced skills (`/clearpath:go`, `/clearpath:doctor`, etc.).
+Claude Code. In Cursor, keep a project rule under
+`.cursor/rules/clearpath.mdc` plus
+`.cursor/rules/clearpath-autopilot.mdc` as the persistent fallback
+because hook delivery is best-effort in the IDE. Session hooks can
+still add context when they fire, but the always-applied rules are the
+primary always-on layer. Use the same namespaced skills
+(`/clearpath:go`, `/clearpath:doctor`, etc.).
 
 ## Project initialization
 

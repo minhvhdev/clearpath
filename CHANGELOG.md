@@ -2,6 +2,27 @@
 
 ## Unreleased
 
+## 0.4.7 - Cursor fallback + Claude hook fix
+
+### Fixed
+
+- **Chrome DevTools screenshot payloads**: added default screenshot
+  guardrails to `.mcp.json` (`jpeg`, quality 70, max `1600x3000`) so
+  oversized `take_screenshot` images are less likely to exceed strict
+  provider request-body limits.
+- **Cursor Clearpath fallback**: added always-applied Cursor rule files
+  under `.cursor/rules/clearpath.mdc` (repo and project template) so
+  new chats still receive Clearpath workflow guidance when IDE hook
+  context is not delivered reliably.
+- **Cursor Autopilot routing fallback**: added
+  `.cursor/rules/clearpath-autopilot.mdc` (repo and project template)
+  to mirror the `UserPromptSubmit` routing behavior through always-on
+  rules for a more Claude Code-like automatic experience.
+- **Claude Code plugin loading**: removed the explicit
+  `hooks/hooks.json` manifest entry from `.claude-plugin/plugin.json`
+  because Claude Code already auto-loads the standard hooks file,
+  avoiding duplicate-hook load failures.
+
 ## 0.4.6 - Windows hook stability + doctor opt-in hints
 
 ### Added
