@@ -57,8 +57,10 @@ change artifact.
   mandatory skills → HTML+Tailwind prototype → present → wait for
   **Approve** or **Request changes** in chat.
 - If the user replies with approval, follow `/clearpath:autonomy`
-  immediately — implement, test, fix, verify, and continue without
-  routine questions.
+  immediately — implement with mandatory
+  `/clearpath:test-driven-development` (RED → verify fail → GREEN →
+  verify pass → refactor), fix, verify, and continue without routine
+  questions.
 - For verification, route by platform: web ->
   `/clearpath:verify-web`; Windows native ->
   `/clearpath:verify-windows`; otherwise use `/clearpath:qa` with

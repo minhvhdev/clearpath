@@ -9,6 +9,11 @@ Execution guardrails for approved code changes in Clearpath.
 Apply during `/clearpath:execute`, `/clearpath:autonomy`, and any
 subagent task that writes production code.
 
+Also apply `/clearpath:test-driven-development` whenever production
+code changes. The Iron Law applies: no production code without a
+verified failing test first. Code written before tests must be deleted
+and rewritten test-first.
+
 ## Guardrails
 
 - No silent assumptions. If the spec, change pack, or repo state is

@@ -11,6 +11,9 @@ classified as `verify-test`.
 Run Verify.
 
 Checks:
+- TDD evidence for implementation changes per
+  `/clearpath:test-driven-development` (tests that failed first, commands
+  run, checklist complete).
 - Existing lint/typecheck/test/build commands.
 - Targeted regression.
 - For web UI: see `/clearpath:verify-web` (Playwright for

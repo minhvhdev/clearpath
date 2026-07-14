@@ -122,9 +122,10 @@ CLEARPATH_AUTOPILOT_ROUTING:
 - If a UI change is involved, follow /clearpath:design-prototype:
   build prototype -> present it -> ask user to Approve or Request
   changes in chat.
-- When the user approves in chat, immediately follow /clearpath:autonomy:
-  implement -> test -> fix -> retest -> release candidate without
-  asking routine questions.
+- When the user approves in chat, immediately follow /clearpath:autonomy
+  with mandatory /clearpath:test-driven-development: RED (failing test)
+  -> verify fail -> GREEN (minimal code) -> verify pass -> refactor ->
+  release candidate without asking routine questions.
 - Stop only at the design checkpoint, release candidate review, or
   a real blocker.
 EOF
@@ -157,13 +158,15 @@ EOF
 CLEARPATH_AUTOPILOT_NOTE:
 - Intent: implement-change. Open or continue a change pack under
   .clearpath/docs/changes/<id>/. For UI work, run design-prototype first.
+  For production code, apply mandatory /clearpath:test-driven-development.
 EOF
       ;;
     fix-bug)
       cat <<'EOF'
 CLEARPATH_AUTOPILOT_NOTE:
-- Intent: fix-bug. Reproduce, write a failing test if possible, fix,
-  and re-run verification.
+- Intent: fix-bug. Reproduce, write a failing test first (mandatory
+  /clearpath:test-driven-development), verify RED, fix with minimal
+  code, verify GREEN, and re-run verification.
 EOF
       ;;
     design-prototype)

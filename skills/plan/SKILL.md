@@ -9,7 +9,8 @@ Run the Plan phase.
 Plan requirements:
 - Small task list.
 - Expected files and modules.
-- Verification step per task.
+- Verification step per task (include TDD cycle: failing test → verify
+  fail → minimal code → verify pass per `/clearpath:test-driven-development`).
 - Risks and approval needs.
 - Subagent context packs for heavy or parallel work.
 

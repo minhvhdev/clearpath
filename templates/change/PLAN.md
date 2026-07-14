@@ -9,13 +9,14 @@ canonical: true
 TBD
 
 ## Tasks
-- [ ] Task 1 — include verification.
+- [ ] Task 1 — include TDD verification (failing test → verify fail → minimal code → verify pass).
 
 ## Expected Files
 TBD
 
 ## Test Plan
-TBD
+Per `/clearpath:test-driven-development`: each task lists the failing
+test to write first, expected RED failure, and GREEN verification command.
 
 ## Approval Needs
 TBD

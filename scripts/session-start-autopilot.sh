@@ -56,8 +56,9 @@ CLEARPATH_AUTOPILOT_INSTRUCTIONS:
   follow /clearpath:go. Do not require the user to pick a skill.
 - For UI work: prototype -> present -> ask user to Approve or Request
   changes in chat.
-- After approval, follow /clearpath:autonomy and keep going without
-  routine questions.
+- After approval, follow /clearpath:autonomy with mandatory
+  /clearpath:test-driven-development and keep going without routine
+  questions.
 - Stop only at the design checkpoint, release candidate review, or a
   real blocker.
 EOF

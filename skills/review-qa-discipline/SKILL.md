@@ -20,6 +20,9 @@ and QA/release subagent work.
   "must fix before release."
 - Be explicit about test gaps and residual risk. If something was not
   verified, say so plainly.
+- For implementation changes, require TDD evidence per
+  `/clearpath:test-driven-development` before a pass verdict. Missing
+  RED verification (test failed first) is a blocker.
 - Never mark work as passed on stale evidence. Re-run or say "not run."
 
 ## Review stance

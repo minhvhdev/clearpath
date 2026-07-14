@@ -1,7 +1,7 @@
 {
   "name": "clearpath",
   "displayName": "Clearpath",
-  "version": "0.4.8",
+  "version": "0.4.9",
   "description": "Approval-gated product delivery workflow for Claude Code and Cursor. Combines GSD-style context engineering, Superpowers-style spec/TDD discipline, gstack-style role review, and Clearpath safety/design/release governance.",
   "author": {
     "name": "Clearpath Project"

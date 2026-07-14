@@ -6,7 +6,7 @@ with a simple workflow: **prototype → approve in chat → agent builds autonom
 It combines:
 
 - **GSD Core-style context engineering**: phase loop, fresh-context work, state artifacts.
-- **Superpowers-style development discipline**: spec-first, plan-first, TDD/review when available.
+- **Superpowers-style development discipline**: spec-first, plan-first, mandatory TDD (red-green-refactor), review.
 - **gstack-style role review**: product/CEO, design, engineering, QA, security, release.
 - **Context Ledger**: artifact memory without reading everything at startup.
 
@@ -85,6 +85,7 @@ also use namespaced skills such as:
 /clearpath:doctor
 /clearpath:design-prototype
 /clearpath:execute
+/clearpath:test-driven-development
 /clearpath:verify
 /clearpath:verify-web
 /clearpath:verify-windows
@@ -110,7 +111,7 @@ Lifecycle:
 
 ```text
 detect -> prototype -> present -> user approves in chat ->
-implement -> test -> fix -> verify -> done
+TDD implement (RED -> verify fail -> GREEN -> verify pass) -> verify -> done
 ```
 
 For UI work, the agent will:

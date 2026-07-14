@@ -17,7 +17,9 @@ For UI work:
 1. Build an **HTML + Tailwind CSS** prototype under `.clearpath/prototype/`
    (use the Tailwind CDN; open `index.html` in a browser to preview).
 2. Ask the user to **Approve** or **Request changes** in chat.
-3. After approval, implement, test, fix, and verify autonomously via `/clearpath:autonomy`.
+3. After approval, implement with mandatory `/clearpath:test-driven-development`
+   (RED → verify fail → GREEN → verify pass → refactor) and verify
+   autonomously via `/clearpath:autonomy`.
 
 All Clearpath artifacts (spec, plan, reviews, QA, etc.) live under
 `.clearpath/docs/` and `.clearpath/docs/changes/<id>/`.

@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 0.4.9 - Mandatory TDD (Superpowers-style)
+
+### Added
+
+- **Mandatory TDD skill**: added `/clearpath:test-driven-development`
+  with Superpowers-style red-green-refactor discipline. Production code
+  requires a verified failing test first; wired into execute, autonomy,
+  implementation-discipline, verify, autopilot routing, and the
+  implementation-engineer agent.
+
 ## 0.4.8 - Goal mode + Cursor repo backfill
 
 ### Added

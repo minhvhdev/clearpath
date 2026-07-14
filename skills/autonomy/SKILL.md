@@ -5,8 +5,9 @@ description: Post-design-approval autonomy contract. After the user approves in 
 # /clearpath:autonomy
 
 For normal usage, `/clearpath:go` is the default entrypoint. This
-skill governs the code -> test -> fix -> retest -> release
-candidate phase that follows design approval in chat.
+This skill governs the TDD-first implementation phase that follows
+design approval in chat: RED → verify fail → GREEN → verify pass →
+refactor → release candidate.
 
 This skill defines the post-approval autonomy contract. Once the
 user approves the design and scope (`DESIGN_APPROVAL.md` and
@@ -23,6 +24,10 @@ Apply `/clearpath:implementation-discipline` during this phase so the
 agent stays inside scope, avoids silent assumptions, and does not call
 work done without verification.
 
+Apply `/clearpath:test-driven-development` **mandatorily** during
+implementation. The loop is **test (RED) → verify fail → code (GREEN)
+→ verify pass → refactor**, not code-first.
+
 ## Automatic (act without asking)
 
 After approval, the agent may, without asking the user:
@@ -34,8 +39,8 @@ After approval, the agent may, without asking the user:
 - fix test failures,
 - re-run verification after a fix,
 - update Clearpath artifacts (`CURRENT_CONTEXT.md`, change pack),
-- run the code -> test -> fix -> retest loop until green or until a
-  real blocker is reached,
+- run the TDD loop per `/clearpath:test-driven-development` until green
+  or until a real blocker is reached,
 - read additional files needed to understand the current task,
 - make small refactors that stay inside the approved file list,
 - run the project's existing dev / build commands,

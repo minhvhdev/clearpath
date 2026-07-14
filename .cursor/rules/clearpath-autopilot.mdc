@@ -20,7 +20,8 @@ Routing:
   **Approve** or **Request changes** in chat.
 - If the user says `approve`, `approved`, `LGTM`, `looks good`,
   `ship it`, `go ahead`, or similar after a design review: continue
-  immediately via `/clearpath:autonomy` without routine questions.
+  immediately via `/clearpath:autonomy` with mandatory
+  `/clearpath:test-driven-development` without routine questions.
 - If the user asks for revision after a design review: revise the
   prototype and re-present it.
 - Verify, test, or QA requests: route to `/clearpath:verify`,

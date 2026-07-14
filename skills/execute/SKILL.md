@@ -12,17 +12,20 @@ Run the Execute phase.
 
 This phase follows the post-approval autonomy contract in
 `/clearpath:autonomy`. After the user approves in chat, the agent
-may run the code -> test -> fix -> retest loop without asking the
-user, except where the contract says it must stop.
+may run the TDD loop per `/clearpath:test-driven-development` without
+asking the user, except where the contract says it must stop.
 
 Apply `/clearpath:implementation-discipline` throughout the
 implementation loop so code changes stay minimal, traceable, and
 verified.
 
+Apply `/clearpath:test-driven-development` **mandatorily** for every
+production code change. No production code without a verified failing
+test first. Bootstrap minimal test infrastructure when the repo has none.
+
 Rules:
 - Stay inside the approved plan.
 - If the plan is wrong, write a `PLAN_DELTA.md` and stop.
-- Use TDD when the repo has test infrastructure.
 - Do not make silent assumptions; state them or stop and ask.
 - Install dependencies, run builds, and deploy when needed to
   complete the approved work.

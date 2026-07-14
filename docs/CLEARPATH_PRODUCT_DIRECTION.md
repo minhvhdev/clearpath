@@ -85,7 +85,9 @@ Initialize / Recover
 5. Run user-scope skills `design-taste-frontend` then `impeccable`
    on the HTML+Tailwind prototype, then get chat design approval.
 6. Plan implementation tasks.
-7. Execute in small tasks; use TDD when tests exist.
+7. Execute in small tasks; apply mandatory
+   `/clearpath:test-driven-development` (red-green-refactor with
+   verified failing tests before production code).
 8. Verify with tests/build and Chrome QA.
 9. Run role review.
 10. Produce release candidate and stop at Release Gate.

@@ -35,8 +35,9 @@ agent run straight through to the goal.
    the required design skills for quality, but do not stop to ask for
    approval after presenting the prototype. Use the prototype as an
    internal design/implementation contract and continue.
-5. Enter `/clearpath:autonomy` as soon as the path is clear and run the
-   code -> test -> fix -> retest loop until done.
+5. Enter `/clearpath:autonomy` as soon as the path is clear and run
+   mandatory `/clearpath:test-driven-development` (RED → verify fail →
+   GREEN → verify pass → refactor) until done.
 6. Verify, review, and package the result as a release candidate when
    appropriate.
 
